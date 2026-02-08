@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import ReactMarkdown from 'react-markdown';
 
 export default function CalendarPage() {
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -136,9 +137,9 @@ export default function CalendarPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <ScrollArea className="h-[300px] pr-4">
-                  <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap text-sm">
-                    {digest}
+                <ScrollArea className="h-[400px] pr-4">
+                  <div className="prose prose-sm dark:prose-invert max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-li:text-muted-foreground prose-ul:my-2 prose-li:my-0.5">
+                    <ReactMarkdown>{digest}</ReactMarkdown>
                   </div>
                 </ScrollArea>
               </CardContent>
