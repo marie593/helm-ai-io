@@ -9,6 +9,7 @@ import {
   LogOut,
   Zap,
   ChevronDown,
+  Plug,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
@@ -28,6 +29,8 @@ const navigation = [
   { name: 'Projects', href: '/projects', icon: FolderKanban },
   { name: 'Calendar', href: '/calendar', icon: Calendar },
   { name: 'Insights', href: '/insights', icon: LineChart },
+  { name: 'Integrations', href: '/integrations', icon: Plug },
+  { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
 export function AppSidebar() {
