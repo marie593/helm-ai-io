@@ -129,6 +129,97 @@ export type Database = {
         }
         Relationships: []
       }
+      feedback_items: {
+        Row: {
+          ai_extracted_actions: Json | null
+          ai_sentiment: string | null
+          ai_summary: string | null
+          ai_themes: string[] | null
+          assigned_to: string | null
+          created_at: string
+          description: string | null
+          id: string
+          linked_task_id: string | null
+          original_content: string | null
+          priority: Database["public"]["Enums"]["feedback_priority"]
+          project_id: string
+          source: Database["public"]["Enums"]["feedback_source"]
+          status: Database["public"]["Enums"]["feedback_status"]
+          submitted_at: string | null
+          submitted_by: string | null
+          title: string
+          type: Database["public"]["Enums"]["feedback_type"]
+          updated_at: string
+          votes: number | null
+        }
+        Insert: {
+          ai_extracted_actions?: Json | null
+          ai_sentiment?: string | null
+          ai_summary?: string | null
+          ai_themes?: string[] | null
+          assigned_to?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          linked_task_id?: string | null
+          original_content?: string | null
+          priority?: Database["public"]["Enums"]["feedback_priority"]
+          project_id: string
+          source?: Database["public"]["Enums"]["feedback_source"]
+          status?: Database["public"]["Enums"]["feedback_status"]
+          submitted_at?: string | null
+          submitted_by?: string | null
+          title: string
+          type?: Database["public"]["Enums"]["feedback_type"]
+          updated_at?: string
+          votes?: number | null
+        }
+        Update: {
+          ai_extracted_actions?: Json | null
+          ai_sentiment?: string | null
+          ai_summary?: string | null
+          ai_themes?: string[] | null
+          assigned_to?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          linked_task_id?: string | null
+          original_content?: string | null
+          priority?: Database["public"]["Enums"]["feedback_priority"]
+          project_id?: string
+          source?: Database["public"]["Enums"]["feedback_source"]
+          status?: Database["public"]["Enums"]["feedback_status"]
+          submitted_at?: string | null
+          submitted_by?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["feedback_type"]
+          updated_at?: string
+          votes?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_items_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feedback_items_linked_task_id_fkey"
+            columns: ["linked_task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feedback_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       milestones: {
         Row: {
           created_at: string
@@ -172,6 +263,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      product_insights: {
+        Row: {
+          created_at: string
+          description: string | null
+          feedback_count: number | null
+          first_reported_at: string | null
+          id: string
+          last_reported_at: string | null
+          priority: Database["public"]["Enums"]["feedback_priority"] | null
+          projects_affected: string[] | null
+          status: Database["public"]["Enums"]["feedback_status"] | null
+          theme: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          feedback_count?: number | null
+          first_reported_at?: string | null
+          id?: string
+          last_reported_at?: string | null
+          priority?: Database["public"]["Enums"]["feedback_priority"] | null
+          projects_affected?: string[] | null
+          status?: Database["public"]["Enums"]["feedback_status"] | null
+          theme: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          feedback_count?: number | null
+          first_reported_at?: string | null
+          id?: string
+          last_reported_at?: string | null
+          priority?: Database["public"]["Enums"]["feedback_priority"] | null
+          projects_affected?: string[] | null
+          status?: Database["public"]["Enums"]["feedback_status"] | null
+          theme?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -247,6 +380,77 @@ export type Database = {
           },
         ]
       }
+      support_tickets: {
+        Row: {
+          assigned_to: string | null
+          created_at: string
+          created_by: string | null
+          feedback_item_id: string | null
+          id: string
+          message: string
+          priority: Database["public"]["Enums"]["feedback_priority"] | null
+          project_id: string
+          status: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string
+          created_by?: string | null
+          feedback_item_id?: string | null
+          id?: string
+          message: string
+          priority?: Database["public"]["Enums"]["feedback_priority"] | null
+          project_id: string
+          status?: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string
+          created_by?: string | null
+          feedback_item_id?: string | null
+          id?: string
+          message?: string
+          priority?: Database["public"]["Enums"]["feedback_priority"] | null
+          project_id?: string
+          status?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_tickets_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "support_tickets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "support_tickets_feedback_item_id_fkey"
+            columns: ["feedback_item_id"]
+            isOneToOne: false
+            referencedRelation: "feedback_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "support_tickets_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tasks: {
         Row: {
           assignee_id: string | null
@@ -309,6 +513,48 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ticket_messages: {
+        Row: {
+          created_at: string
+          id: string
+          is_internal: boolean | null
+          message: string
+          ticket_id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_internal?: boolean | null
+          message: string
+          ticket_id: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_internal?: boolean | null
+          message?: string
+          ticket_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ticket_messages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -381,6 +627,20 @@ export type Database = {
     }
     Enums: {
       customer_role: "customer_contact"
+      feedback_priority: "low" | "medium" | "high" | "urgent"
+      feedback_source: "email" | "chat" | "call" | "ticket" | "manual"
+      feedback_status:
+        | "new"
+        | "acknowledged"
+        | "in_progress"
+        | "resolved"
+        | "wont_fix"
+      feedback_type:
+        | "bug"
+        | "feature_request"
+        | "feedback"
+        | "question"
+        | "complaint"
       milestone_status: "pending" | "in_progress" | "completed" | "delayed"
       project_status:
         | "planning"
@@ -518,6 +778,22 @@ export const Constants = {
   public: {
     Enums: {
       customer_role: ["customer_contact"],
+      feedback_priority: ["low", "medium", "high", "urgent"],
+      feedback_source: ["email", "chat", "call", "ticket", "manual"],
+      feedback_status: [
+        "new",
+        "acknowledged",
+        "in_progress",
+        "resolved",
+        "wont_fix",
+      ],
+      feedback_type: [
+        "bug",
+        "feature_request",
+        "feedback",
+        "question",
+        "complaint",
+      ],
       milestone_status: ["pending", "in_progress", "completed", "delayed"],
       project_status: [
         "planning",
