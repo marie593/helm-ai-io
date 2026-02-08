@@ -235,9 +235,9 @@ export default function CalendarPage() {
                 }}
               />
             ) : (
-              <div className="rounded-md border p-4">
+              <div className="rounded-md border">
                 {/* Week Navigation */}
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between p-4 border-b">
                   <Button variant="outline" size="icon" onClick={goToPreviousWeek}>
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
@@ -249,8 +249,8 @@ export default function CalendarPage() {
                   </Button>
                 </div>
                 
-                {/* Week Days Grid */}
-                <div className="grid grid-cols-7 gap-2">
+                {/* Week Days List */}
+                <div className="divide-y">
                   {weekDays.map((day) => {
                     const isSelected = date && isSameDay(day, date);
                     const isToday = isSameDay(day, new Date());
@@ -260,21 +260,40 @@ export default function CalendarPage() {
                         key={day.toISOString()}
                         onClick={() => setDate(day)}
                         className={`
-                          flex flex-col items-center justify-center p-3 rounded-lg transition-colors min-h-[80px]
+                          flex items-center w-full p-4 transition-colors text-left
                           ${isSelected 
-                            ? 'bg-primary text-primary-foreground' 
-                            : isToday 
-                              ? 'bg-accent text-accent-foreground font-semibold' 
-                              : 'hover:bg-accent'
+                            ? 'bg-primary/10' 
+                            : 'hover:bg-accent'
                           }
                         `}
                       >
-                        <span className="text-xs text-muted-foreground mb-1">
-                          {format(day, 'EEE')}
-                        </span>
-                        <span className={`text-lg font-medium ${isSelected ? 'text-primary-foreground' : ''}`}>
-                          {format(day, 'd')}
-                        </span>
+                        {/* Date Column */}
+                        <div className={`
+                          flex flex-col items-center justify-center w-16 h-16 rounded-lg shrink-0
+                          ${isSelected 
+                            ? 'bg-primary text-primary-foreground' 
+                            : isToday 
+                              ? 'bg-accent text-accent-foreground' 
+                              : 'bg-muted'
+                          }
+                        `}>
+                          <span className="text-xs font-medium uppercase">
+                            {format(day, 'EEE')}
+                          </span>
+                          <span className="text-2xl font-bold">
+                            {format(day, 'd')}
+                          </span>
+                        </div>
+                        
+                        {/* Details Column */}
+                        <div className="ml-4 flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground">
+                            {format(day, 'EEEE, MMMM d, yyyy')}
+                          </p>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            No events scheduled
+                          </p>
+                        </div>
                       </button>
                     );
                   })}
