@@ -150,7 +150,7 @@ serve(async (req: Request): Promise<Response> => {
 
     // Send invitation email
     const emailResponse = await resend.emails.send({
-      from: "Invitations <onboarding@resend.dev>", // Replace with your verified domain
+      from: "Invitations <noreply@helm-ai.io>",
       to: [email],
       subject: `You've been invited to join ${customerName}`,
       html: `
