@@ -82,14 +82,14 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
-        display: ["Cal Sans", "Inter", "system-ui", "sans-serif"],
+        sans: ["Nunito", "system-ui", "sans-serif"],
+        display: ["Nunito", "system-ui", "sans-serif"],
       },
       boxShadow: {
         subtle: "0 1px 2px 0 rgb(0 0 0 / 0.03), 0 1px 3px 0 rgb(0 0 0 / 0.05)",
-        card: "0 2px 8px -2px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.06)",
-        elevated: "0 4px 16px -4px rgb(0 0 0 / 0.15), 0 2px 8px -2px rgb(0 0 0 / 0.1)",
-        glow: "0 0 20px -5px hsl(var(--primary) / 0.4)",
+        card: "0 2px 8px -2px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.04)",
+        elevated: "0 4px 16px -4px rgb(0 0 0 / 0.12), 0 2px 8px -2px rgb(0 0 0 / 0.08)",
+        glow: "0 0 20px -5px hsl(var(--primary) / 0.3)",
       },
       keyframes: {
         "accordion-down": {
