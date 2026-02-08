@@ -3,8 +3,14 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   ArrowLeft, Building2, Loader2, Mail, Users, Target, 
-  Trash2, Edit2, Save, X, Plus, UserPlus 
+  Trash2, Edit2, Save, X, Plus, UserPlus, UserCheck, Send 
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';
 import { AppLayout } from '@/components/layout/AppLayout';
@@ -106,9 +112,9 @@ export default function CustomerDetail() {
   
   const [isEditing, setIsEditing] = useState(false);
   const [newTeam, setNewTeam] = useState('');
-  const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
+  const [isConnectMemberOpen, setIsConnectMemberOpen] = useState(false);
+  const [isInviteMemberOpen, setIsInviteMemberOpen] = useState(false);
   const [memberEmail, setMemberEmail] = useState('');
-  const [memberName, setMemberName] = useState('');
   const [memberEmailError, setMemberEmailError] = useState('');
   const [formData, setFormData] = useState<CustomerFormData>({
     name: '',
@@ -297,9 +303,9 @@ export default function CustomerDetail() {
         });
       }
       
-      setIsAddMemberOpen(false);
+      setIsConnectMemberOpen(false);
+      setIsInviteMemberOpen(false);
       setMemberEmail('');
-      setMemberName('');
       setMemberEmailError('');
     },
     onError: (error: Error) => {
@@ -345,14 +351,24 @@ export default function CustomerDetail() {
     },
   });
 
-  const handleAddMember = () => {
+  const handleConnectMember = () => {
     const result = memberEmailSchema.safeParse(memberEmail);
     if (!result.success) {
       setMemberEmailError(result.error.errors[0].message);
       return;
     }
     setMemberEmailError('');
-    addTeamMember.mutate({ email: memberEmail, name: memberName });
+    addTeamMember.mutate({ email: memberEmail, name: '' });
+  };
+
+  const handleInviteMember = () => {
+    const result = memberEmailSchema.safeParse(memberEmail);
+    if (!result.success) {
+      setMemberEmailError(result.error.errors[0].message);
+      return;
+    }
+    setMemberEmailError('');
+    addTeamMember.mutate({ email: memberEmail, name: '' });
   };
 
   const startEditing = () => {
@@ -733,64 +749,134 @@ export default function CustomerDetail() {
                 </CardDescription>
               </div>
               {isVendorAdmin && (
-                <Dialog open={isAddMemberOpen} onOpenChange={setIsAddMemberOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      Add Member
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Add Team Member</DialogTitle>
-                      <DialogDescription>
-                        Add an existing user as a team member for this customer. They must have an account already.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4 py-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="member-email">Email Address *</Label>
-                        <Input
-                          id="member-email"
-                          type="email"
-                          placeholder="user@example.com"
-                          value={memberEmail}
-                          onChange={(e) => {
-                            setMemberEmail(e.target.value);
-                            if (memberEmailError) setMemberEmailError('');
-                          }}
-                          className={memberEmailError ? 'border-destructive' : ''}
-                        />
-                        {memberEmailError && (
-                          <p className="text-sm text-destructive">{memberEmailError}</p>
-                        )}
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button 
-                        variant="outline" 
-                        onClick={() => {
-                          setIsAddMemberOpen(false);
-                          setMemberEmail('');
-                          setMemberEmailError('');
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                      <Button 
-                        onClick={handleAddMember}
-                        disabled={addTeamMember.isPending}
-                      >
-                        {addTeamMember.isPending ? (
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        ) : (
-                          <UserPlus className="h-4 w-4 mr-2" />
-                        )}
+                <>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <UserPlus className="h-4 w-4 mr-2" />
                         Add Member
                       </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => setIsConnectMemberOpen(true)}>
+                        <UserCheck className="h-4 w-4 mr-2" />
+                        Connect Existing User
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setIsInviteMemberOpen(true)}>
+                        <Send className="h-4 w-4 mr-2" />
+                        Invite New User
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  {/* Connect Existing User Dialog */}
+                  <Dialog open={isConnectMemberOpen} onOpenChange={setIsConnectMemberOpen}>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Connect Existing User</DialogTitle>
+                        <DialogDescription>
+                          Link an existing user account as a team member for this customer. They must already have an account in the system.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="connect-member-email">Email Address *</Label>
+                          <Input
+                            id="connect-member-email"
+                            type="email"
+                            placeholder="user@example.com"
+                            value={memberEmail}
+                            onChange={(e) => {
+                              setMemberEmail(e.target.value);
+                              if (memberEmailError) setMemberEmailError('');
+                            }}
+                            className={memberEmailError ? 'border-destructive' : ''}
+                          />
+                          {memberEmailError && (
+                            <p className="text-sm text-destructive">{memberEmailError}</p>
+                          )}
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => {
+                            setIsConnectMemberOpen(false);
+                            setMemberEmail('');
+                            setMemberEmailError('');
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          onClick={handleConnectMember}
+                          disabled={addTeamMember.isPending}
+                        >
+                          {addTeamMember.isPending ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <UserCheck className="h-4 w-4 mr-2" />
+                          )}
+                          Connect User
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+
+                  {/* Invite New User Dialog */}
+                  <Dialog open={isInviteMemberOpen} onOpenChange={setIsInviteMemberOpen}>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Invite New User</DialogTitle>
+                        <DialogDescription>
+                          Send an email invitation to a new user. They will receive a link to create their account and join this customer.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="invite-member-email">Email Address *</Label>
+                          <Input
+                            id="invite-member-email"
+                            type="email"
+                            placeholder="newuser@example.com"
+                            value={memberEmail}
+                            onChange={(e) => {
+                              setMemberEmail(e.target.value);
+                              if (memberEmailError) setMemberEmailError('');
+                            }}
+                            className={memberEmailError ? 'border-destructive' : ''}
+                          />
+                          {memberEmailError && (
+                            <p className="text-sm text-destructive">{memberEmailError}</p>
+                          )}
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => {
+                            setIsInviteMemberOpen(false);
+                            setMemberEmail('');
+                            setMemberEmailError('');
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          onClick={handleInviteMember}
+                          disabled={addTeamMember.isPending}
+                        >
+                          {addTeamMember.isPending ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <Send className="h-4 w-4 mr-2" />
+                          )}
+                          Send Invitation
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </>
               )}
             </div>
           </CardHeader>
