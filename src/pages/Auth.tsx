@@ -104,7 +104,7 @@ export default function AuthPage() {
             </div>
           </div>
           <h1 className="text-3xl font-bold text-primary-foreground mb-4">
-            LaunchPad
+            HelmAI
           </h1>
           <p className="text-lg text-primary-foreground/80">
             AI-powered implementation management for SaaS teams. Streamline your customer onboarding with intelligent roadmaps and insights.
@@ -121,7 +121,7 @@ export default function AuthPage() {
                 <Zap className="h-6 w-6 text-primary-foreground" />
               </div>
             </div>
-            <h1 className="text-2xl font-bold text-foreground">LaunchPad</h1>
+            <h1 className="text-2xl font-bold text-foreground">HelmAI</h1>
           </div>
 
           <div>
