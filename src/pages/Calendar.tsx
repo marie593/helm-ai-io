@@ -1,13 +1,14 @@
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
-import { useState, useEffect } from 'react';
-import { Sparkles, Clock, FileText, Loader2, Copy, Check, Share2, Mail, MessageSquare, Users } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Sparkles, Clock, FileText, Loader2, Copy, Check, Share2, Mail, MessageSquare, Users, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import ReactMarkdown from 'react-markdown';
+import { startOfWeek, endOfWeek, addWeeks, subWeeks, format, eachDayOfInterval, isSameDay } from 'date-fns';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,10 +34,21 @@ export default function CalendarPage() {
   const [digest, setDigest] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [calendarView, setCalendarView] = useState<'week' | 'month'>('month');
+  const [weekStart, setWeekStart] = useState<Date>(startOfWeek(new Date(), { weekStartsOn: 0 }));
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCalendarClient, setSelectedCalendarClient] = useState<string>('all');
   const [selectedDigestClients, setSelectedDigestClients] = useState<string[]>([]);
   const { toast } = useToast();
+
+  const weekDays = useMemo(() => {
+    return eachDayOfInterval({
+      start: weekStart,
+      end: endOfWeek(weekStart, { weekStartsOn: 0 })
+    });
+  }, [weekStart]);
+
+  const goToPreviousWeek = () => setWeekStart(subWeeks(weekStart, 1));
+  const goToNextWeek = () => setWeekStart(addWeeks(weekStart, 1));
 
   useEffect(() => {
     fetchCustomers();
@@ -192,36 +204,83 @@ export default function CalendarPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              className="rounded-md border w-full"
-              numberOfMonths={calendarView === 'month' ? 1 : 1}
-              classNames={{
-                months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0 w-full",
-                month: "space-y-4 w-full",
-                caption: "flex justify-center pt-1 relative items-center",
-                caption_label: "text-base font-medium",
-                nav: "space-x-1 flex items-center",
-                nav_button: "h-9 w-9 bg-transparent p-0 opacity-50 hover:opacity-100 border rounded-md",
-                nav_button_previous: "absolute left-1",
-                nav_button_next: "absolute right-1",
-                table: "w-full border-collapse",
-                head_row: "flex w-full",
-                head_cell: "text-muted-foreground rounded-md flex-1 font-medium text-sm py-2",
-                row: "flex w-full mt-2",
-                cell: "flex-1 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20 min-h-[60px]",
-                day: "h-12 w-full p-0 font-normal aria-selected:opacity-100 hover:bg-accent rounded-md transition-colors",
-                day_range_end: "day-range-end",
-                day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-                day_today: "bg-accent text-accent-foreground font-semibold",
-                day_outside: "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
-                day_disabled: "text-muted-foreground opacity-50",
-                day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
-                day_hidden: "invisible",
-              }}
-            />
+            {calendarView === 'month' ? (
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                className="rounded-md border w-full"
+                classNames={{
+                  months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0 w-full",
+                  month: "space-y-4 w-full",
+                  caption: "flex justify-center pt-1 relative items-center",
+                  caption_label: "text-base font-medium",
+                  nav: "space-x-1 flex items-center",
+                  nav_button: "h-9 w-9 bg-transparent p-0 opacity-50 hover:opacity-100 border rounded-md",
+                  nav_button_previous: "absolute left-1",
+                  nav_button_next: "absolute right-1",
+                  table: "w-full border-collapse",
+                  head_row: "flex w-full",
+                  head_cell: "text-muted-foreground rounded-md flex-1 font-medium text-sm py-2",
+                  row: "flex w-full mt-2",
+                  cell: "flex-1 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20 min-h-[60px]",
+                  day: "h-12 w-full p-0 font-normal aria-selected:opacity-100 hover:bg-accent rounded-md transition-colors",
+                  day_range_end: "day-range-end",
+                  day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                  day_today: "bg-accent text-accent-foreground font-semibold",
+                  day_outside: "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
+                  day_disabled: "text-muted-foreground opacity-50",
+                  day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
+                  day_hidden: "invisible",
+                }}
+              />
+            ) : (
+              <div className="rounded-md border p-4">
+                {/* Week Navigation */}
+                <div className="flex items-center justify-between mb-4">
+                  <Button variant="outline" size="icon" onClick={goToPreviousWeek}>
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <span className="text-base font-medium">
+                    {format(weekStart, 'MMM d')} - {format(endOfWeek(weekStart, { weekStartsOn: 0 }), 'MMM d, yyyy')}
+                  </span>
+                  <Button variant="outline" size="icon" onClick={goToNextWeek}>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+                
+                {/* Week Days Grid */}
+                <div className="grid grid-cols-7 gap-2">
+                  {weekDays.map((day) => {
+                    const isSelected = date && isSameDay(day, date);
+                    const isToday = isSameDay(day, new Date());
+                    
+                    return (
+                      <button
+                        key={day.toISOString()}
+                        onClick={() => setDate(day)}
+                        className={`
+                          flex flex-col items-center justify-center p-3 rounded-lg transition-colors min-h-[80px]
+                          ${isSelected 
+                            ? 'bg-primary text-primary-foreground' 
+                            : isToday 
+                              ? 'bg-accent text-accent-foreground font-semibold' 
+                              : 'hover:bg-accent'
+                          }
+                        `}
+                      >
+                        <span className="text-xs text-muted-foreground mb-1">
+                          {format(day, 'EEE')}
+                        </span>
+                        <span className={`text-lg font-medium ${isSelected ? 'text-primary-foreground' : ''}`}>
+                          {format(day, 'd')}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
