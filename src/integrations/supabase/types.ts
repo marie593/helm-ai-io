@@ -99,6 +99,61 @@ export type Database = {
           },
         ]
       }
+      calendar_sync_mappings: {
+        Row: {
+          created_at: string
+          event_type: string
+          google_event_id: string
+          id: string
+          last_synced_at: string
+          local_event_id: string | null
+          local_milestone_id: string | null
+          project_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          google_event_id: string
+          id?: string
+          last_synced_at?: string
+          local_event_id?: string | null
+          local_milestone_id?: string | null
+          project_id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          google_event_id?: string
+          id?: string
+          last_synced_at?: string
+          local_event_id?: string | null
+          local_milestone_id?: string | null
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_sync_mappings_local_event_id_fkey"
+            columns: ["local_event_id"]
+            isOneToOne: false
+            referencedRelation: "calendar_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "calendar_sync_mappings_local_milestone_id_fkey"
+            columns: ["local_milestone_id"]
+            isOneToOne: false
+            referencedRelation: "milestones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "calendar_sync_mappings_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customer_invitations: {
         Row: {
           created_at: string
@@ -271,6 +326,47 @@ export type Database = {
             foreignKeyName: "feedback_items_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      google_calendar_integrations: {
+        Row: {
+          calendar_id: string
+          created_at: string
+          id: string
+          last_sync_at: string | null
+          project_id: string
+          sync_enabled: boolean
+          sync_token: string | null
+          updated_at: string
+        }
+        Insert: {
+          calendar_id: string
+          created_at?: string
+          id?: string
+          last_sync_at?: string | null
+          project_id: string
+          sync_enabled?: boolean
+          sync_token?: string | null
+          updated_at?: string
+        }
+        Update: {
+          calendar_id?: string
+          created_at?: string
+          id?: string
+          last_sync_at?: string | null
+          project_id?: string
+          sync_enabled?: boolean
+          sync_token?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "google_calendar_integrations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
