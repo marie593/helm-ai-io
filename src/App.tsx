@@ -15,6 +15,8 @@ import Projects from "./pages/Projects";
 import ProjectDetail from "./pages/ProjectDetail";
 import Calendar from "./pages/Calendar";
 import Insights from "./pages/Insights";
+import Integrations from "./pages/Integrations";
+import Settings from "./pages/Settings";
 import CustomerNew from "./pages/CustomerNew";
 import CustomerDetail from "./pages/CustomerDetail";
 import ProjectNew from "./pages/ProjectNew";
@@ -101,6 +103,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Insights />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/integrations"
+              element={
+                <ProtectedRoute>
+                  <Integrations />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <Settings />
                 </ProtectedRoute>
               }
             />
