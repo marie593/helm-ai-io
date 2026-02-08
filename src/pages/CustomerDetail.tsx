@@ -34,6 +34,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { toast } from '@/components/ui/sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { Profile } from '@/types/database';
@@ -89,6 +98,10 @@ export default function CustomerDetail() {
   
   const [isEditing, setIsEditing] = useState(false);
   const [newTeam, setNewTeam] = useState('');
+  const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
+  const [memberEmail, setMemberEmail] = useState('');
+  const [memberName, setMemberName] = useState('');
+  const [memberEmailError, setMemberEmailError] = useState('');
   const [formData, setFormData] = useState<CustomerFormData>({
     name: '',
     industry: '',
@@ -100,6 +113,8 @@ export default function CustomerDetail() {
     notes: '',
   });
   const [errors, setErrors] = useState<Partial<Record<keyof CustomerFormData, string>>>({});
+
+  const memberEmailSchema = z.string().trim().email('Please enter a valid email address').max(255);
 
   // Fetch customer details
   const { data: customer, isLoading } = useQuery({
@@ -213,6 +228,90 @@ export default function CustomerDetail() {
       toast.error('Failed to delete customer', { description: error.message });
     },
   });
+
+  // Add team member mutation
+  const addTeamMember = useMutation({
+    mutationFn: async ({ email, name }: { email: string; name: string }) => {
+      // First, check if user already exists by email in profiles
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', email.toLowerCase())
+        .maybeSingle();
+
+      if (existingProfile) {
+        // Check if already a team member
+        const { data: existingRole } = await supabase
+          .from('user_customer_roles')
+          .select('id')
+          .eq('user_id', existingProfile.id)
+          .eq('customer_id', customerId)
+          .maybeSingle();
+
+        if (existingRole) {
+          throw new Error('This user is already a team member');
+        }
+
+        // Add them as a team member
+        const { error } = await supabase
+          .from('user_customer_roles')
+          .insert({
+            user_id: existingProfile.id,
+            customer_id: customerId!,
+          });
+
+        if (error) throw error;
+        return { type: 'linked' as const, email };
+      } else {
+        // User doesn't exist - we need to invite them
+        // For now, we'll create a pending invitation record
+        // In production, you'd send an invite email
+        throw new Error(`No user found with email "${email}". Please ensure they have signed up first, or invite them to create an account.`);
+      }
+    },
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: ['customer-team-members', customerId] });
+      toast.success('Team member added', { 
+        description: `${result.email} has been added to this customer.` 
+      });
+      setIsAddMemberOpen(false);
+      setMemberEmail('');
+      setMemberName('');
+      setMemberEmailError('');
+    },
+    onError: (error: Error) => {
+      toast.error('Failed to add team member', { description: error.message });
+    },
+  });
+
+  // Remove team member mutation
+  const removeTeamMember = useMutation({
+    mutationFn: async (roleId: string) => {
+      const { error } = await supabase
+        .from('user_customer_roles')
+        .delete()
+        .eq('id', roleId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customer-team-members', customerId] });
+      toast.success('Team member removed');
+    },
+    onError: (error: Error) => {
+      toast.error('Failed to remove team member', { description: error.message });
+    },
+  });
+
+  const handleAddMember = () => {
+    const result = memberEmailSchema.safeParse(memberEmail);
+    if (!result.success) {
+      setMemberEmailError(result.error.errors[0].message);
+      return;
+    }
+    setMemberEmailError('');
+    addTeamMember.mutate({ email: memberEmail, name: memberName });
+  };
 
   const startEditing = () => {
     if (customer) {
@@ -592,10 +691,64 @@ export default function CustomerDetail() {
                 </CardDescription>
               </div>
               {isVendorAdmin && (
-                <Button variant="outline" size="sm" disabled>
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  Add Member
-                </Button>
+                <Dialog open={isAddMemberOpen} onOpenChange={setIsAddMemberOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <UserPlus className="h-4 w-4 mr-2" />
+                      Add Member
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add Team Member</DialogTitle>
+                      <DialogDescription>
+                        Add an existing user as a team member for this customer. They must have an account already.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="member-email">Email Address *</Label>
+                        <Input
+                          id="member-email"
+                          type="email"
+                          placeholder="user@example.com"
+                          value={memberEmail}
+                          onChange={(e) => {
+                            setMemberEmail(e.target.value);
+                            if (memberEmailError) setMemberEmailError('');
+                          }}
+                          className={memberEmailError ? 'border-destructive' : ''}
+                        />
+                        {memberEmailError && (
+                          <p className="text-sm text-destructive">{memberEmailError}</p>
+                        )}
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => {
+                          setIsAddMemberOpen(false);
+                          setMemberEmail('');
+                          setMemberEmailError('');
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                      <Button 
+                        onClick={handleAddMember}
+                        disabled={addTeamMember.isPending}
+                      >
+                        {addTeamMember.isPending ? (
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        ) : (
+                          <UserPlus className="h-4 w-4 mr-2" />
+                        )}
+                        Add Member
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               )}
             </div>
           </CardHeader>
@@ -625,7 +778,35 @@ export default function CustomerDetail() {
                         </p>
                       </div>
                     </div>
-                    <Badge variant="secondary">Customer Contact</Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary">Customer Contact</Badge>
+                      {isVendorAdmin && (
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Remove Team Member</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to remove {member.profile?.full_name || 'this user'} from this customer? They will lose access to customer data.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => removeTeamMember.mutate(member.id)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Remove
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
