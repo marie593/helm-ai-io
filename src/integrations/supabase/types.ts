@@ -101,30 +101,42 @@ export type Database = {
       }
       customers: {
         Row: {
+          company_size: string | null
           contact_email: string | null
           created_at: string
+          goals: string | null
           id: string
           industry: string | null
           logo_url: string | null
           name: string
+          notes: string | null
+          teams_involved: string[] | null
           updated_at: string
         }
         Insert: {
+          company_size?: string | null
           contact_email?: string | null
           created_at?: string
+          goals?: string | null
           id?: string
           industry?: string | null
           logo_url?: string | null
           name: string
+          notes?: string | null
+          teams_involved?: string[] | null
           updated_at?: string
         }
         Update: {
+          company_size?: string | null
           contact_email?: string | null
           created_at?: string
+          goals?: string | null
           id?: string
           industry?: string | null
           logo_url?: string | null
           name?: string
+          notes?: string | null
+          teams_involved?: string[] | null
           updated_at?: string
         }
         Relationships: []

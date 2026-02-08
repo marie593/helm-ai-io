@@ -24,6 +24,10 @@ export interface Customer {
   logo_url: string | null;
   contact_email: string | null;
   industry: string | null;
+  company_size: string | null;
+  teams_involved: string[] | null;
+  goals: string | null;
+  notes: string | null;
   created_at: string;
   updated_at: string;
 }
