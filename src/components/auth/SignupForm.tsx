@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,6 +15,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const signupSchema = z.object({
   fullName: z.string().min(2, 'Name must be at least 2 characters'),
@@ -30,24 +31,104 @@ type SignupFormData = z.infer<typeof signupSchema>;
 
 interface SignupFormProps {
   onSuccess: () => void;
+  inviteToken?: string;
+  defaultEmail?: string;
 }
 
-export function SignupForm({ onSuccess }: SignupFormProps) {
+export function SignupForm({ onSuccess, inviteToken, defaultEmail }: SignupFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { signUp } = useAuth();
   const { toast } = useToast();
 
   const form = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
-    defaultValues: { fullName: '', email: '', password: '', confirmPassword: '' },
+    defaultValues: { 
+      fullName: '', 
+      email: defaultEmail || '', 
+      password: '', 
+      confirmPassword: '' 
+    },
   });
+
+  // Update email field if defaultEmail changes
+  useEffect(() => {
+    if (defaultEmail) {
+      form.setValue('email', defaultEmail);
+    }
+  }, [defaultEmail, form]);
+
+  const processInvitation = async (userId: string) => {
+    if (!inviteToken) return;
+
+    try {
+      // Find the invitation by token
+      const { data: invitation, error: findError } = await supabase
+        .from('customer_invitations')
+        .select('id, customer_id, status, expires_at')
+        .eq('token', inviteToken)
+        .eq('status', 'pending')
+        .single();
+
+      if (findError || !invitation) {
+        console.error('Invitation not found or already used');
+        return;
+      }
+
+      // Check if expired
+      if (new Date(invitation.expires_at) < new Date()) {
+        toast({
+          variant: 'destructive',
+          title: 'Invitation expired',
+          description: 'This invitation has expired. Please request a new one.',
+        });
+        return;
+      }
+
+      // Add user to customer team - need to wait for profile to be created
+      // The profile is created by a trigger, so we may need to wait
+      let retries = 0;
+      while (retries < 5) {
+        const { error: roleError } = await supabase
+          .from('user_customer_roles')
+          .insert({
+            user_id: userId,
+            customer_id: invitation.customer_id,
+          });
+
+        if (!roleError) {
+          // Update invitation status
+          await supabase
+            .from('customer_invitations')
+            .update({ status: 'accepted' })
+            .eq('id', invitation.id);
+
+          toast({
+            title: 'Invitation accepted!',
+            description: 'You have been added to the team.',
+          });
+          return;
+        }
+
+        // If RLS error, wait and retry
+        if (roleError.code === '42501') {
+          retries++;
+          await new Promise(resolve => setTimeout(resolve, 500));
+        } else {
+          console.error('Error adding user to customer:', roleError);
+          return;
+        }
+      }
+    } catch (error) {
+      console.error('Error processing invitation:', error);
+    }
+  };
 
   const handleSubmit = async (data: SignupFormData) => {
     setIsLoading(true);
-    const { error } = await signUp(data.email, data.password, data.fullName);
-    setIsLoading(false);
-
+    const { error, data: authData } = await signUp(data.email, data.password, data.fullName);
+    
     if (error) {
+      setIsLoading(false);
       const message = error.message.includes('already registered')
         ? 'This email is already registered. Please sign in instead.'
         : error.message;
@@ -57,6 +138,12 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
         description: message,
       });
     } else {
+      // Process invitation if there is one
+      if (inviteToken && authData?.user?.id) {
+        await processInvitation(authData.user.id);
+      }
+      
+      setIsLoading(false);
       toast({
         title: 'Account created!',
         description: 'Please check your email to verify your account.',
@@ -96,6 +183,7 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
                   type="email"
                   placeholder="you@company.com"
                   autoComplete="email"
+                  disabled={!!defaultEmail}
                   {...field}
                 />
               </FormControl>
@@ -141,7 +229,7 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
         />
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Create account
+          {inviteToken ? 'Create account & accept invitation' : 'Create account'}
         </Button>
       </form>
     </Form>

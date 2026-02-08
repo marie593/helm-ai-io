@@ -77,6 +77,14 @@ interface CustomerTeamMember {
   profile?: Profile;
 }
 
+interface PendingInvitation {
+  id: string;
+  email: string;
+  status: string;
+  expires_at: string;
+  created_at: string;
+}
+
 const customerSchema = z.object({
   name: z.string().trim().min(1, 'Company name is required').max(100),
   industry: z.string().trim().max(50).optional().or(z.literal('')),
@@ -94,7 +102,7 @@ export default function CustomerDetail() {
   const { customerId } = useParams<{ customerId: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { isVendorAdmin } = useAuth();
+  const { isVendorAdmin, isVendorStaff } = useAuth();
   
   const [isEditing, setIsEditing] = useState(false);
   const [newTeam, setNewTeam] = useState('');
@@ -179,6 +187,23 @@ export default function CustomerDetail() {
     enabled: !!customerId,
   });
 
+  // Fetch pending invitations
+  const { data: pendingInvitations } = useQuery({
+    queryKey: ['customer-invitations', customerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('customer_invitations')
+        .select('id, email, status, expires_at, created_at')
+        .eq('customer_id', customerId)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data as PendingInvitation[];
+    },
+    enabled: !!customerId && isVendorStaff,
+  });
+
   // Update customer mutation
   const updateCustomer = useMutation({
     mutationFn: async (data: CustomerFormData) => {
@@ -229,51 +254,49 @@ export default function CustomerDetail() {
     },
   });
 
-  // Add team member mutation
+  // Add team member mutation - uses edge function to handle both existing users and new invitations
   const addTeamMember = useMutation({
-    mutationFn: async ({ email, name }: { email: string; name: string }) => {
-      // First, check if user already exists by email in profiles
-      const { data: existingProfile } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', email.toLowerCase())
-        .maybeSingle();
-
-      if (existingProfile) {
-        // Check if already a team member
-        const { data: existingRole } = await supabase
-          .from('user_customer_roles')
-          .select('id')
-          .eq('user_id', existingProfile.id)
-          .eq('customer_id', customerId)
-          .maybeSingle();
-
-        if (existingRole) {
-          throw new Error('This user is already a team member');
+    mutationFn: async ({ email }: { email: string; name: string }) => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-invitation`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session?.access_token}`,
+          },
+          body: JSON.stringify({
+            email,
+            customerId,
+            customerName: customer?.name || 'Customer',
+          }),
         }
+      );
 
-        // Add them as a team member
-        const { error } = await supabase
-          .from('user_customer_roles')
-          .insert({
-            user_id: existingProfile.id,
-            customer_id: customerId!,
-          });
+      const result = await response.json();
 
-        if (error) throw error;
-        return { type: 'linked' as const, email };
-      } else {
-        // User doesn't exist - we need to invite them
-        // For now, we'll create a pending invitation record
-        // In production, you'd send an invite email
-        throw new Error(`No user found with email "${email}". Please ensure they have signed up first, or invite them to create an account.`);
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to add team member');
       }
+
+      return result;
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['customer-team-members', customerId] });
-      toast.success('Team member added', { 
-        description: `${result.email} has been added to this customer.` 
-      });
+      queryClient.invalidateQueries({ queryKey: ['customer-invitations', customerId] });
+      
+      if (result.type === 'linked') {
+        toast.success('Team member added', { 
+          description: 'Existing user has been added to this customer.' 
+        });
+      } else {
+        toast.success('Invitation sent!', { 
+          description: 'An email invitation has been sent to the new user.' 
+        });
+      }
+      
       setIsAddMemberOpen(false);
       setMemberEmail('');
       setMemberName('');
@@ -300,6 +323,25 @@ export default function CustomerDetail() {
     },
     onError: (error: Error) => {
       toast.error('Failed to remove team member', { description: error.message });
+    },
+  });
+
+  // Cancel invitation mutation
+  const cancelInvitation = useMutation({
+    mutationFn: async (invitationId: string) => {
+      const { error } = await supabase
+        .from('customer_invitations')
+        .update({ status: 'cancelled' })
+        .eq('id', invitationId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customer-invitations', customerId] });
+      toast.success('Invitation cancelled');
+    },
+    onError: (error: Error) => {
+      toast.error('Failed to cancel invitation', { description: error.message });
     },
   });
 
@@ -752,7 +794,8 @@ export default function CustomerDetail() {
               )}
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
+            {/* Active Team Members */}
             {teamMembers && teamMembers.length > 0 ? (
               <div className="space-y-3">
                 {teamMembers.map((member) => (
@@ -810,10 +853,55 @@ export default function CustomerDetail() {
                   </div>
                 ))}
               </div>
-            ) : (
+            ) : !pendingInvitations?.length ? (
               <p className="text-muted-foreground text-center py-8">
                 No team members linked yet
               </p>
+            ) : null}
+
+            {/* Pending Invitations */}
+            {pendingInvitations && pendingInvitations.length > 0 && (
+              <div className="space-y-3">
+                <p className="text-sm font-medium text-muted-foreground">Pending Invitations</p>
+                {pendingInvitations.map((invitation) => {
+                  const isExpired = new Date(invitation.expires_at) < new Date();
+                  return (
+                    <div
+                      key={invitation.id}
+                      className="flex items-center justify-between p-3 rounded-lg border border-dashed bg-muted/30"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Avatar>
+                          <AvatarFallback className="bg-muted">
+                            <Mail className="h-4 w-4 text-muted-foreground" />
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">{invitation.email}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {isExpired ? 'Expired' : `Expires ${new Date(invitation.expires_at).toLocaleDateString()}`}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={isExpired ? 'destructive' : 'outline'}>
+                          {isExpired ? 'Expired' : 'Pending'}
+                        </Badge>
+                        {isVendorAdmin && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                            onClick={() => cancelInvitation.mutate(invitation.id)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             )}
           </CardContent>
         </Card>

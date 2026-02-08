@@ -1,13 +1,25 @@
-import { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Navigate, useSearchParams } from 'react-router-dom';
 import { Zap } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { SignupForm } from '@/components/auth/SignupForm';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true);
+  const [searchParams] = useSearchParams();
+  const inviteToken = searchParams.get('invite');
+  const inviteEmail = searchParams.get('email');
+  
+  const [isLogin, setIsLogin] = useState(!inviteToken);
   const { user } = useAuth();
+
+  // If there's an invite token, default to signup mode
+  useEffect(() => {
+    if (inviteToken) {
+      setIsLogin(false);
+    }
+  }, [inviteToken]);
 
   // Redirect if already logged in
   if (user) {
@@ -45,6 +57,20 @@ export default function AuthPage() {
             <h1 className="text-2xl font-bold text-foreground">HelmAI</h1>
           </div>
 
+          {inviteToken && !isLogin && (
+            <Card className="bg-primary/5 border-primary/20">
+              <CardContent className="pt-4">
+                <p className="text-sm text-center">
+                  <span className="font-medium">You've been invited!</span>
+                  <br />
+                  <span className="text-muted-foreground">
+                    Create an account to accept your invitation.
+                  </span>
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
           <div>
             <h2 className="text-2xl font-bold text-foreground">
               {isLogin ? 'Welcome back' : 'Create your account'}
@@ -59,7 +85,11 @@ export default function AuthPage() {
           {isLogin ? (
             <LoginForm />
           ) : (
-            <SignupForm onSuccess={() => setIsLogin(true)} />
+            <SignupForm 
+              onSuccess={() => setIsLogin(true)} 
+              inviteToken={inviteToken || undefined}
+              defaultEmail={inviteEmail || undefined}
+            />
           )}
 
           <div className="text-center">
