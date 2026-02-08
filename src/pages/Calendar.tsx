@@ -2,12 +2,18 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
 import { useState } from 'react';
-import { Sparkles, Clock, FileText, Loader2, Copy, Check } from 'lucide-react';
+import { Sparkles, Clock, FileText, Loader2, Copy, Check, Share2, Mail, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import ReactMarkdown from 'react-markdown';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 export default function CalendarPage() {
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -66,6 +72,21 @@ export default function CalendarPage() {
     } catch {
       toast({ title: 'Failed to copy', variant: 'destructive' });
     }
+  };
+
+  const sendViaEmail = () => {
+    // Open mailto link with digest content
+    const subject = encodeURIComponent('Weekly Implementation Digest');
+    const body = encodeURIComponent(digest || '');
+    window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+    toast({ title: 'Email client opened' });
+  };
+
+  const sendViaSlack = () => {
+    toast({
+      title: 'Slack Integration',
+      description: 'Slack integration needs to be configured. Would you like to set it up?',
+    });
   };
 
   return (
@@ -127,13 +148,32 @@ export default function CalendarPage() {
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-base">Generated Digest</CardTitle>
-                  <Button variant="ghost" size="sm" onClick={copyToClipboard}>
-                    {copied ? (
-                      <Check className="h-4 w-4 text-primary" />
-                    ) : (
-                      <Copy className="h-4 w-4" />
-                    )}
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        <Share2 className="h-4 w-4 mr-1" />
+                        Export
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={copyToClipboard}>
+                        {copied ? (
+                          <Check className="h-4 w-4 mr-2 text-primary" />
+                        ) : (
+                          <Copy className="h-4 w-4 mr-2" />
+                        )}
+                        Copy to clipboard
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={sendViaEmail}>
+                        <Mail className="h-4 w-4 mr-2" />
+                        Send via Email
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={sendViaSlack}>
+                        <MessageSquare className="h-4 w-4 mr-2" />
+                        Send to Slack
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </CardHeader>
               <CardContent>
