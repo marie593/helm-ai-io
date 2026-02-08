@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.generate-roadmap]
 verify_jwt = false
+
+[functions.generate-digest]
+verify_jwt = false
