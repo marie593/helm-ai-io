@@ -16,6 +16,7 @@ import ProjectDetail from "./pages/ProjectDetail";
 import Calendar from "./pages/Calendar";
 import Insights from "./pages/Insights";
 import CustomerNew from "./pages/CustomerNew";
+import ProjectNew from "./pages/ProjectNew";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -59,6 +60,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Projects />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/projects/new"
+              element={
+                <ProtectedRoute>
+                  <ProjectNew />
                 </ProtectedRoute>
               }
             />
