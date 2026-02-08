@@ -24,6 +24,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { toast } from '@/components/ui/sonner';
 import { useAuth } from '@/hooks/useAuth';
+import { GmailIntegrationCard } from '@/components/integrations/GmailIntegrationCard';
 
 interface GoogleCalendar {
   id: string;
@@ -38,70 +39,64 @@ interface Integration {
   status: 'available' | 'connected' | 'coming_soon';
   icon: string;
   hasConnection?: boolean;
+  isCustom?: boolean;
 }
 
-const baseIntegrations = [
+const baseIntegrations: Omit<Integration, 'hasConnection' | 'isCustom'>[] = [
   {
     id: 'slack',
     name: 'Slack',
     description: 'Get notifications and updates in your Slack channels',
-    status: 'available' as const,
+    status: 'available',
     icon: '💬',
-  },
-  {
-    id: 'gmail',
-    name: 'Gmail',
-    description: 'Forward emails for AI parsing and action item extraction',
-    status: 'available' as const,
-    icon: '📧',
   },
   {
     id: 'gcalendar',
     name: 'Google Calendar',
     description: 'Sync milestones and events with your calendar',
-    status: 'available' as const,
+    status: 'available',
     icon: '📅',
   },
   {
     id: 'gdrive',
     name: 'Google Drive',
     description: 'Access and share project documents and files',
-    status: 'available' as const,
+    status: 'available',
     icon: '📁',
   },
   {
     id: 'notion',
     name: 'Notion',
     description: 'Sync project documentation and knowledge bases',
-    status: 'available' as const,
+    status: 'available',
     icon: '📝',
   },
   {
     id: 'otterai',
     name: 'Otter.ai',
     description: 'Import meeting transcripts and extract action items',
-    status: 'available' as const,
+    status: 'available',
     icon: '🎙️',
   },
   {
     id: 'jira',
     name: 'Jira',
     description: 'Sync tasks and issues with Jira projects',
-    status: 'available' as const,
+    status: 'available',
     icon: '📋',
   },
   {
     id: 'salesforce',
     name: 'Salesforce',
     description: 'Connect customer data with Salesforce CRM',
-    status: 'coming_soon' as const,
+    status: 'coming_soon',
     icon: '☁️',
   },
   {
     id: 'hubspot',
     name: 'HubSpot',
     description: 'Integrate with HubSpot for marketing automation',
-    status: 'coming_soon' as const,
+    status: 'coming_soon',
     icon: '🧡',
   },
 ];
@@ -146,7 +141,6 @@ export default function Integrations() {
   const listCalendars = async () => {
     setIsLoadingCalendars(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
       const response = await supabase.functions.invoke('google-calendar-sync', {
         body: { action: 'list-calendars' },
       });
@@ -263,6 +257,10 @@ export default function Integrations() {
     >
       <div className="space-y-6 animate-fade-in">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {/* Gmail Integration - Custom Card */}
+          <GmailIntegrationCard />
+          
+          {/* Other integrations */}
           {integrations.map((integration) => (
             <Card key={integration.id} className="shadow-card">
               <CardHeader>
