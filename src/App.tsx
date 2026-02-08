@@ -16,6 +16,7 @@ import ProjectDetail from "./pages/ProjectDetail";
 import Calendar from "./pages/Calendar";
 import Insights from "./pages/Insights";
 import CustomerNew from "./pages/CustomerNew";
+import CustomerDetail from "./pages/CustomerDetail";
 import ProjectNew from "./pages/ProjectNew";
 import NotFound from "./pages/NotFound";
 
@@ -52,6 +53,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <CustomerNew />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/customers/:customerId"
+              element={
+                <ProtectedRoute>
+                  <CustomerDetail />
                 </ProtectedRoute>
               }
             />
