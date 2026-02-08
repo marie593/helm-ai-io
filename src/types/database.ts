@@ -4,6 +4,10 @@ export type ProjectStatus = 'planning' | 'in_progress' | 'at_risk' | 'completed'
 export type TaskStatus = 'todo' | 'in_progress' | 'blocked' | 'completed';
 export type MilestoneStatus = 'pending' | 'in_progress' | 'completed' | 'delayed';
 export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
+export type FeedbackSource = 'email' | 'chat' | 'call' | 'ticket' | 'manual';
+export type FeedbackType = 'bug' | 'feature_request' | 'feedback' | 'question' | 'complaint';
+export type FeedbackStatus = 'new' | 'acknowledged' | 'in_progress' | 'resolved' | 'wont_fix';
+export type FeedbackPriority = 'low' | 'medium' | 'high' | 'urgent';
 
 export interface Profile {
   id: string;
@@ -69,6 +73,74 @@ export interface Task {
   // Joined fields
   assignee?: Profile;
   milestone?: Milestone;
+}
+
+export interface FeedbackItem {
+  id: string;
+  project_id: string;
+  source: FeedbackSource;
+  type: FeedbackType;
+  status: FeedbackStatus;
+  priority: FeedbackPriority;
+  title: string;
+  description: string | null;
+  original_content: string | null;
+  ai_summary: string | null;
+  ai_extracted_actions: unknown[];
+  ai_sentiment: string | null;
+  ai_themes: string[] | null;
+  submitted_by: string | null;
+  submitted_at: string | null;
+  assigned_to: string | null;
+  linked_task_id: string | null;
+  votes: number;
+  created_at: string;
+  updated_at: string;
+  // Joined fields
+  assignee?: Profile;
+  linked_task?: Task;
+}
+
+export interface ProductInsight {
+  id: string;
+  theme: string;
+  description: string | null;
+  feedback_count: number;
+  projects_affected: string[];
+  priority: FeedbackPriority;
+  status: FeedbackStatus;
+  first_reported_at: string;
+  last_reported_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SupportTicket {
+  id: string;
+  project_id: string;
+  feedback_item_id: string | null;
+  subject: string;
+  message: string;
+  status: string;
+  priority: FeedbackPriority;
+  created_by: string | null;
+  assigned_to: string | null;
+  created_at: string;
+  updated_at: string;
+  // Joined fields
+  creator?: Profile;
+  assignee?: Profile;
+}
+
+export interface TicketMessage {
+  id: string;
+  ticket_id: string;
+  user_id: string | null;
+  message: string;
+  is_internal: boolean;
+  created_at: string;
+  // Joined fields
+  user?: Profile;
 }
 
 export interface ActivityFeed {
