@@ -52,7 +52,7 @@ export function AppSidebar() {
           <Zap className="h-4 w-4 text-sidebar-primary-foreground" />
         </div>
         <span className="text-lg font-semibold text-sidebar-foreground">
-          LaunchPad
+          HelmAI
         </span>
       </div>
 
