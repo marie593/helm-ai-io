@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Calendar, Map, MessageSquare, Settings } from 'lucide-react';
+import { ArrowLeft, Calendar, Map, MessageSquare, Settings, MessageCircle, Lightbulb } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,8 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { ProjectCalendar } from '@/components/project/ProjectCalendar';
 import { ProjectRoadmap } from '@/components/project/ProjectRoadmap';
 import { FeedbackTracker } from '@/components/project/FeedbackTracker';
+import { ProjectChats } from '@/components/project/ProjectChats';
+import { ProjectInsights } from '@/components/project/ProjectInsights';
 import { Project, Customer } from '@/types/database';
 
 interface ProjectWithCustomer extends Project {
@@ -82,7 +84,7 @@ export default function ProjectDetail() {
         </Button>
 
         <Tabs defaultValue="roadmap" className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
+          <TabsList className="grid w-full max-w-2xl grid-cols-5">
             <TabsTrigger value="roadmap" className="flex items-center gap-2">
               <Map className="h-4 w-4" />
               Roadmap
@@ -94,6 +96,14 @@ export default function ProjectDetail() {
             <TabsTrigger value="feedback" className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4" />
               Feedback
+            </TabsTrigger>
+            <TabsTrigger value="chats" className="flex items-center gap-2">
+              <MessageCircle className="h-4 w-4" />
+              Chats
+            </TabsTrigger>
+            <TabsTrigger value="insights" className="flex items-center gap-2">
+              <Lightbulb className="h-4 w-4" />
+              Insights
             </TabsTrigger>
           </TabsList>
 
@@ -107,6 +117,14 @@ export default function ProjectDetail() {
 
           <TabsContent value="feedback" className="mt-6">
             <FeedbackTracker projectId={projectId!} />
+          </TabsContent>
+
+          <TabsContent value="chats" className="mt-6">
+            <ProjectChats projectId={projectId!} />
+          </TabsContent>
+
+          <TabsContent value="insights" className="mt-6">
+            <ProjectInsights projectId={projectId!} />
           </TabsContent>
         </Tabs>
       </div>
