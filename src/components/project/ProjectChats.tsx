@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/components/ui/sonner';
@@ -26,7 +27,7 @@ export function ProjectChats({ projectId }: ProjectChatsProps) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('activity_feed')
-        .select('*')
+        .select('*, profiles:user_id(id, full_name, email, avatar_url)')
         .eq('project_id', projectId)
         .order('created_at', { ascending: true });
       if (error) throw error;
@@ -197,20 +198,28 @@ export function ProjectChats({ projectId }: ProjectChatsProps) {
                   const meta = activity.metadata as Record<string, unknown> | null;
                   const source = (meta?.source as string) || 'system';
                   const sourceIcon = source === 'gmail' ? '📧' : source === 'slack' ? '💬' : '💭';
+                  const profile = activity.profiles as unknown as { id: string; full_name: string | null; email: string; avatar_url: string | null } | null;
+                  const displayName = profile?.full_name || profile?.email || 'Unknown';
+                  const initials = (profile?.full_name || profile?.email || '?').slice(0, 2).toUpperCase();
+                  const isCurrentUser = profile?.id === user?.id;
 
                   return (
-                    <div key={activity.id} className="flex gap-3">
-                      <span className="text-lg mt-0.5 shrink-0">{sourceIcon}</span>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-sm font-medium">{activity.title}</span>
+                    <div key={activity.id} className={`flex gap-3 ${isCurrentUser ? 'flex-row-reverse' : ''}`}>
+                      <Avatar className="h-8 w-8 shrink-0">
+                        <AvatarImage src={profile?.avatar_url || undefined} />
+                        <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+                      </Avatar>
+                      <div className={`flex-1 min-w-0 ${isCurrentUser ? 'text-right' : ''}`}>
+                        <div className={`flex items-center gap-2 mb-1 ${isCurrentUser ? 'justify-end' : ''}`}>
+                          <span className="text-xs">{sourceIcon}</span>
+                          <span className="text-sm font-medium">{displayName}</span>
                           <span className="text-xs text-muted-foreground">
                             {new Date(activity.created_at).toLocaleString()}
                           </span>
                         </div>
-                        <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                          {activity.description}
-                        </p>
+                        <div className={`inline-block rounded-lg px-3 py-2 text-sm ${isCurrentUser ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                          <p className="whitespace-pre-wrap">{activity.description}</p>
+                        </div>
                       </div>
                     </div>
                   );
