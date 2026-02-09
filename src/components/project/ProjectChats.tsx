@@ -35,18 +35,6 @@ export function ProjectChats({ projectId }: ProjectChatsProps) {
     },
   });
 
-  // Fetch Gmail integration status
-  const { data: gmailIntegration } = useQuery({
-    queryKey: ['gmail-integration-status'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('gmail_integrations')
-        .select('*')
-        .maybeSingle();
-      if (error) throw error;
-      return data;
-    },
-  });
 
   // Send in-app chat message
   const sendMessage = useMutation({
@@ -91,11 +79,7 @@ export function ProjectChats({ projectId }: ProjectChatsProps) {
                 <span className="text-xl">📧</span>
                 <CardTitle className="text-base">Gmail</CardTitle>
               </div>
-              {gmailIntegration ? (
-                <Badge className="bg-success/10 text-success border-0 text-xs">Connected</Badge>
-              ) : (
-                <Badge variant="secondary" className="text-xs">Not Connected</Badge>
-              )}
+              <Badge variant="secondary" className="text-xs">Coming Soon</Badge>
             </div>
           </CardHeader>
           <CardContent>
@@ -106,10 +90,9 @@ export function ProjectChats({ projectId }: ProjectChatsProps) {
               variant="outline"
               size="sm"
               className="w-full"
-              onClick={() => window.location.href = '/integrations'}
+              disabled
             >
-              <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
-              {gmailIntegration ? 'Manage' : 'Connect'}
+              Coming Soon
             </Button>
           </CardContent>
         </Card>

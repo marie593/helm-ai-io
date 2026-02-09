@@ -24,7 +24,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { toast } from '@/components/ui/sonner';
 import { useAuth } from '@/hooks/useAuth';
-import { GmailIntegrationCard } from '@/components/integrations/GmailIntegrationCard';
+
 
 interface GoogleCalendar {
   id: string;
@@ -257,8 +257,26 @@ export default function Integrations() {
     >
       <div className="space-y-6 animate-fade-in">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {/* Gmail Integration - Custom Card */}
-          <GmailIntegrationCard />
+          {/* Gmail Integration - Coming Soon */}
+          <Card className="shadow-card">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">📧</span>
+                  <CardTitle className="text-lg">Gmail</CardTitle>
+                </div>
+                <Badge variant="secondary">Coming Soon</Badge>
+              </div>
+              <CardDescription className="mt-2">
+                Import emails and parse them for action items
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" className="w-full" disabled>
+                Coming Soon
+              </Button>
+            </CardContent>
+          </Card>
           
           {/* Other integrations */}
           {integrations.map((integration) => (
