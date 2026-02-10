@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format, differenceInDays, isPast } from 'date-fns';
 import { Sparkles, CheckCircle2, Circle, Clock, AlertTriangle, ChevronDown, ChevronRight, Plus, RefreshCw, Loader2, MessageSquarePlus, Send } from 'lucide-react';
@@ -320,7 +321,8 @@ export function ProjectRoadmap({ projectId, projectDescription }: ProjectRoadmap
         })}
       </div>
 
-      {/* Floating AI Prompt Button */}
+      {/* Floating AI Prompt Button - portaled to body to avoid overflow clipping */}
+      {createPortal(
       <Dialog open={aiPromptOpen} onOpenChange={setAiPromptOpen}>
         <DialogTrigger asChild>
           <Button
@@ -376,6 +378,7 @@ export function ProjectRoadmap({ projectId, projectDescription }: ProjectRoadmap
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      , document.body)}
     </div>
   );
 }
