@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format, differenceInDays, isPast } from 'date-fns';
-import { Sparkles, CheckCircle2, Circle, Clock, AlertTriangle, ChevronDown, ChevronRight, Plus, RefreshCw, Loader2 } from 'lucide-react';
+import { Sparkles, CheckCircle2, Circle, Clock, AlertTriangle, ChevronDown, ChevronRight, Plus, RefreshCw, Loader2, MessageSquarePlus, Send } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,8 @@ export function ProjectRoadmap({ projectId, projectDescription }: ProjectRoadmap
   const [expandedMilestones, setExpandedMilestones] = useState<Set<string>>(new Set());
   const [isGenerating, setIsGenerating] = useState(false);
   const [briefOpen, setBriefOpen] = useState(false);
+  const [aiPromptOpen, setAiPromptOpen] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState('');
   const [projectBrief, setProjectBrief] = useState(projectDescription || '');
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -55,35 +57,46 @@ export function ProjectRoadmap({ projectId, projectDescription }: ProjectRoadmap
     },
   });
 
-  const generateRoadmap = async (isRefresh = false) => {
-    if (!isRefresh && !projectBrief.trim()) {
+  const generateRoadmap = async (isRefresh = false, customPrompt?: string) => {
+    if (!isRefresh && !customPrompt && !projectBrief.trim()) {
       toast({ title: 'Please provide a project brief', variant: 'destructive' });
       return;
     }
 
     setIsGenerating(true);
     setBriefOpen(false);
+    setAiPromptOpen(false);
     
     try {
+      const brief = customPrompt 
+        ? `${projectBrief || projectDescription || ''}\n\nUSER REQUEST: ${customPrompt}`
+        : projectBrief;
+
       const { data, error } = await supabase.functions.invoke('generate-roadmap', {
-        body: { projectId, projectBrief, refresh: isRefresh }
+        body: { projectId, projectBrief: brief, refresh: isRefresh || !!customPrompt }
       });
 
       if (error) throw error;
 
-      toast({ title: isRefresh ? 'Roadmap refreshed successfully!' : 'Roadmap generated successfully!' });
+      toast({ title: customPrompt ? 'Roadmap updated with your changes!' : isRefresh ? 'Roadmap refreshed successfully!' : 'Roadmap generated successfully!' });
       queryClient.invalidateQueries({ queryKey: ['milestones', projectId] });
       queryClient.invalidateQueries({ queryKey: ['tasks', projectId] });
+      setAiPrompt('');
     } catch (error) {
       console.error('Error generating roadmap:', error);
       toast({ 
-        title: 'Failed to generate roadmap', 
+        title: 'Failed to update roadmap', 
         description: error instanceof Error ? error.message : 'Unknown error',
         variant: 'destructive' 
       });
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  const handleAiPromptSubmit = () => {
+    if (!aiPrompt.trim()) return;
+    generateRoadmap(false, aiPrompt.trim());
   };
 
   const toggleMilestone = (id: string) => {
@@ -306,6 +319,63 @@ export function ProjectRoadmap({ projectId, projectDescription }: ProjectRoadmap
           );
         })}
       </div>
+
+      {/* Floating AI Prompt Button */}
+      <Dialog open={aiPromptOpen} onOpenChange={setAiPromptOpen}>
+        <DialogTrigger asChild>
+          <Button
+            size="lg"
+            className="fixed bottom-6 right-6 rounded-full h-14 w-14 shadow-lg z-50 bg-primary hover:bg-primary/90"
+            disabled={isGenerating}
+          >
+            {isGenerating ? (
+              <Loader2 className="h-6 w-6 animate-spin" />
+            ) : (
+              <MessageSquarePlus className="h-6 w-6" />
+            )}
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+              Update Roadmap with AI
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Describe the changes you'd like to make. AI will analyze the current roadmap and regenerate it with your adjustments.
+            </p>
+            <Textarea
+              placeholder="e.g. Push back the data migration phase by 2 weeks, add a security audit milestone before go-live, prioritize API integrations..."
+              value={aiPrompt}
+              onChange={(e) => setAiPrompt(e.target.value)}
+              className="min-h-[120px]"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                  handleAiPromptSubmit();
+                }
+              }}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAiPromptOpen(false)}>Cancel</Button>
+            <Button onClick={handleAiPromptSubmit} disabled={isGenerating || !aiPrompt.trim()}>
+              {isGenerating ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Updating...
+                </>
+              ) : (
+                <>
+                  <Send className="h-4 w-4 mr-2" />
+                  Apply Changes
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
