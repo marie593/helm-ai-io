@@ -10,6 +10,8 @@ interface AuthContextType {
   vendorRole: VendorRole | null;
   isVendorStaff: boolean;
   isVendorAdmin: boolean;
+  isCustomerContact: boolean;
+  licenseType: 'admin' | 'collaborator';
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null; data: { user: User | null } | null }>;
@@ -23,6 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [vendorRole, setVendorRole] = useState<VendorRole | null>(null);
+  const [isCustomerContact, setIsCustomerContact] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -40,6 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
           setProfile(null);
           setVendorRole(null);
+          setIsCustomerContact(false);
           setIsLoading(false);
         }
       }
@@ -84,6 +88,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setVendorRole(null);
       }
+
+      // Check if user is a customer contact
+      const { data: customerRoleData } = await supabase
+        .from('user_customer_roles')
+        .select('id')
+        .eq('user_id', userId)
+        .limit(1);
+
+      setIsCustomerContact(!!(customerRoleData && customerRoleData.length > 0));
     } catch (error) {
       console.error('Error fetching user data:', error);
     } finally {
@@ -121,6 +134,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isVendorStaff = vendorRole !== null;
   const isVendorAdmin = vendorRole === 'admin';
+  const licenseType = isVendorStaff ? 'admin' as const : 'collaborator' as const;
 
   return (
     <AuthContext.Provider
@@ -131,6 +145,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         vendorRole,
         isVendorStaff,
         isVendorAdmin,
+        isCustomerContact,
+        licenseType,
         isLoading,
         signIn,
         signUp,

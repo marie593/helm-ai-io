@@ -24,18 +24,22 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Customers', href: '/customers', icon: Users },
-  { name: 'Projects', href: '/projects', icon: FolderKanban },
-  { name: 'Calendar', href: '/calendar', icon: Calendar },
-  { name: 'Insights', href: '/insights', icon: LineChart },
-  { name: 'Integrations', href: '/integrations', icon: Plug },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, adminOnly: false },
+  { name: 'Customers', href: '/customers', icon: Users, adminOnly: true },
+  { name: 'Projects', href: '/projects', icon: FolderKanban, adminOnly: false },
+  { name: 'Calendar', href: '/calendar', icon: Calendar, adminOnly: false },
+  { name: 'Insights', href: '/insights', icon: LineChart, adminOnly: true },
+  { name: 'Integrations', href: '/integrations', icon: Plug, adminOnly: true },
+  { name: 'Settings', href: '/settings', icon: Settings, adminOnly: true },
 ];
 
 export function AppSidebar() {
   const location = useLocation();
-  const { profile, signOut, isVendorAdmin } = useAuth();
+  const { profile, signOut, isVendorAdmin, isVendorStaff, licenseType } = useAuth();
+
+  const visibleNavigation = navigation.filter(
+    (item) => !item.adminOnly || isVendorStaff
+  );
 
   const getInitials = (name: string | null) => {
     if (!name) return 'U';
@@ -61,7 +65,7 @@ export function AppSidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1 px-3 py-4">
-        {navigation.map((item) => {
+        {visibleNavigation.map((item) => {
           const isActive = location.pathname === item.href || 
             (item.href !== '/dashboard' && location.pathname.startsWith(item.href));
           
@@ -102,20 +106,22 @@ export function AppSidebar() {
                   {profile?.full_name || 'User'}
                 </p>
                 <p className="text-xs text-sidebar-foreground/60 truncate">
-                  {isVendorAdmin ? 'Admin' : 'Team Member'}
+                  {licenseType === 'admin' ? (isVendorAdmin ? 'Admin' : 'Team Member') : 'Collaborator'}
                 </p>
               </div>
               <ChevronDown className="h-4 w-4 text-sidebar-foreground/60" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuItem asChild>
-              <Link to="/settings" className="flex items-center gap-2">
-                <Settings className="h-4 w-4" />
-                Settings
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
+            {isVendorStaff && (
+              <DropdownMenuItem asChild>
+                <Link to="/settings" className="flex items-center gap-2">
+                  <Settings className="h-4 w-4" />
+                  Settings
+                </Link>
+              </DropdownMenuItem>
+            )}
+            {isVendorStaff && <DropdownMenuSeparator />}
             <DropdownMenuItem onClick={signOut} className="text-destructive">
               <LogOut className="h-4 w-4 mr-2" />
               Sign out
