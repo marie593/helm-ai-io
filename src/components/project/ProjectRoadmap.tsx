@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format, differenceInDays, isPast } from 'date-fns';
-import { Sparkles, CheckCircle2, Circle, Clock, AlertTriangle, ChevronDown, ChevronRight, Plus } from 'lucide-react';
+import { Sparkles, CheckCircle2, Circle, Clock, AlertTriangle, ChevronDown, ChevronRight, Plus, RefreshCw, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -55,8 +55,8 @@ export function ProjectRoadmap({ projectId, projectDescription }: ProjectRoadmap
     },
   });
 
-  const generateRoadmap = async () => {
-    if (!projectBrief.trim()) {
+  const generateRoadmap = async (isRefresh = false) => {
+    if (!isRefresh && !projectBrief.trim()) {
       toast({ title: 'Please provide a project brief', variant: 'destructive' });
       return;
     }
@@ -66,12 +66,12 @@ export function ProjectRoadmap({ projectId, projectDescription }: ProjectRoadmap
     
     try {
       const { data, error } = await supabase.functions.invoke('generate-roadmap', {
-        body: { projectId, projectBrief }
+        body: { projectId, projectBrief, refresh: isRefresh }
       });
 
       if (error) throw error;
 
-      toast({ title: 'Roadmap generated successfully!' });
+      toast({ title: isRefresh ? 'Roadmap refreshed successfully!' : 'Roadmap generated successfully!' });
       queryClient.invalidateQueries({ queryKey: ['milestones', projectId] });
       queryClient.invalidateQueries({ queryKey: ['tasks', projectId] });
     } catch (error) {
@@ -164,7 +164,7 @@ export function ProjectRoadmap({ projectId, projectDescription }: ProjectRoadmap
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setBriefOpen(false)}>Cancel</Button>
-                <Button onClick={generateRoadmap} disabled={isGenerating}>
+                <Button onClick={() => generateRoadmap(false)} disabled={isGenerating}>
                   {isGenerating ? (
                     <>
                       <Sparkles className="h-4 w-4 mr-2 animate-pulse" />
@@ -189,10 +189,25 @@ export function ProjectRoadmap({ projectId, projectDescription }: ProjectRoadmap
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-foreground">Implementation Roadmap</h2>
-        <Button variant="outline" size="sm">
-          <Plus className="h-4 w-4 mr-2" />
-          Add Milestone
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => generateRoadmap(true)} 
+            disabled={isGenerating}
+          >
+            {isGenerating ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4 mr-2" />
+            )}
+            {isGenerating ? 'Refreshing...' : 'Refresh Roadmap'}
+          </Button>
+          <Button variant="outline" size="sm">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Milestone
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-3">
