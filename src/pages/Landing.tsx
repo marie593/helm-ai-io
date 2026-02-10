@@ -102,7 +102,7 @@ export default function Landing() {
                 </a>
               </div>
               <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
-                Lawyer turned Ops Lead who spent 10+ years implementing software for legal teams — seeing all of the challenges, surprises and disappointments that came with missed expectations, manual tracking and unclear wins.
+                Lawyer turned Ops Lead who spent 10+ years implementing software for legal teams — seeing all of the challenges and surprises, including missed expectations, manual tracking and unclear wins.
               </p>
             </div>
           </div>
