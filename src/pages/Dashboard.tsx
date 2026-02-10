@@ -13,7 +13,9 @@ import {
   Filter,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { AppLayout } from '@/components/layout/AppLayout';
+import { CollaboratorDashboard } from '@/components/dashboard/CollaboratorDashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { HealthScore } from '@/components/ui/health-score';
@@ -27,6 +29,20 @@ interface ProjectWithCustomer extends Project {
 }
 
 export default function Dashboard() {
+  const { isVendorStaff } = useAuth();
+
+  if (!isVendorStaff) {
+    return (
+      <AppLayout title="Dashboard" description="Your implementation overview">
+        <CollaboratorDashboard />
+      </AppLayout>
+    );
+  }
+
+  return <VendorDashboard />;
+}
+
+function VendorDashboard() {
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>('all');
 
   const { data: customers } = useQuery({
