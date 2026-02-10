@@ -55,6 +55,60 @@ export type Database = {
           },
         ]
       }
+      booking_requests: {
+        Row: {
+          created_at: string
+          duration_minutes: number
+          id: string
+          notes: string | null
+          project_id: string
+          requested_by: string | null
+          requested_date: string
+          requested_time: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          notes?: string | null
+          project_id: string
+          requested_by?: string | null
+          requested_date: string
+          requested_time: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          notes?: string | null
+          project_id?: string
+          requested_by?: string | null
+          requested_date?: string
+          requested_time?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_requests_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_requests_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       calendar_events: {
         Row: {
           ai_suggested: boolean | null
@@ -652,6 +706,8 @@ export type Database = {
       }
       projects: {
         Row: {
+          booking_type: string | null
+          booking_url: string | null
           created_at: string
           customer_id: string
           description: string | null
@@ -664,6 +720,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          booking_type?: string | null
+          booking_url?: string | null
           created_at?: string
           customer_id: string
           description?: string | null
@@ -676,6 +734,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          booking_type?: string | null
+          booking_url?: string | null
           created_at?: string
           customer_id?: string
           description?: string | null
