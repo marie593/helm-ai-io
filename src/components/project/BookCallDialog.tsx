@@ -108,6 +108,18 @@ export function BookCallDialog({ projectId }: BookCallDialogProps) {
         notes: notes || null,
       });
       if (error) throw error;
+
+      // Send email notification to CSM (fire and forget)
+      supabase.functions.invoke('notify-booking-request', {
+        body: {
+          projectId,
+          requestedDate: format(selectedDate, 'yyyy-MM-dd'),
+          requestedTime: selectedTime,
+          durationMinutes: parseInt(duration),
+          notes: notes || null,
+          requestedByUserId: user?.id,
+        },
+      }).catch((err) => console.error('Failed to send booking notification:', err));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['booking-requests', projectId] });
