@@ -10,6 +10,7 @@ import { HealthScore } from '@/components/ui/health-score';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { ProjectCalendar } from '@/components/project/ProjectCalendar';
 import { ProjectRoadmap } from '@/components/project/ProjectRoadmap';
+import { ProjectCollaboratorBar } from '@/components/project/ProjectCollaboratorBar';
 import { FeedbackTracker } from '@/components/project/FeedbackTracker';
 import { ProjectChats } from '@/components/project/ProjectChats';
 import { ProjectInsights } from '@/components/project/ProjectInsights';
@@ -106,6 +107,10 @@ export default function ProjectDetail() {
               Insights
             </TabsTrigger>
           </TabsList>
+
+          <div className="mt-4">
+            <ProjectCollaboratorBar projectId={projectId!} />
+          </div>
 
           <TabsContent value="roadmap" className="mt-6">
             <ProjectRoadmap projectId={projectId!} projectDescription={project.description} />
