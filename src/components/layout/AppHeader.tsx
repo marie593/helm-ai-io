@@ -1,7 +1,8 @@
 import { ReactNode } from 'react';
-import { Search, Bell } from 'lucide-react';
+import { Search, Bell, LogOut } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/useAuth';
 
 interface AppHeaderProps {
   title?: string;
@@ -10,6 +11,8 @@ interface AppHeaderProps {
 }
 
 export function AppHeader({ title, description, actions }: AppHeaderProps) {
+  const { signOut } = useAuth();
+
   return (
     <header className="flex h-16 items-center justify-between border-b border-border bg-background px-6">
       <div>
@@ -34,6 +37,10 @@ export function AppHeader({ title, description, actions }: AppHeaderProps) {
           <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-destructive" />
         </Button>
         {actions}
+        <Button variant="ghost" size="sm" onClick={signOut} className="text-muted-foreground hover:text-destructive">
+          <LogOut className="h-4 w-4 mr-1" />
+          Sign out
+        </Button>
       </div>
     </header>
   );
