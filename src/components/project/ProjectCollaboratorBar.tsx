@@ -22,7 +22,7 @@ interface Collaborator {
     full_name: string | null;
     email: string;
     avatar_url: string | null;
-  };
+  } | null;
 }
 
 type CollaboratorRole = 'vendor_lead' | 'customer_lead' | 'collaborator';
@@ -116,13 +116,13 @@ export function ProjectCollaboratorBar({ projectId }: ProjectCollaboratorBarProp
           {collaborator ? (
             <button className="relative group flex items-center gap-1.5 rounded-full pr-2 hover:bg-accent transition-colors">
               <Avatar className="h-8 w-8 border-2 border-background shadow-sm cursor-pointer">
-                <AvatarImage src={collaborator.profiles.avatar_url || undefined} />
+                <AvatarImage src={collaborator.profiles?.avatar_url || undefined} />
                 <AvatarFallback className="text-xs bg-primary text-primary-foreground">
-                  {getInitials(collaborator.profiles.full_name, collaborator.profiles.email)}
+                  {getInitials(collaborator.profiles?.full_name ?? null, collaborator.profiles?.email ?? '')}
                 </AvatarFallback>
               </Avatar>
               <span className="text-sm font-medium text-foreground max-w-[120px] truncate">
-                {collaborator.profiles.full_name || collaborator.profiles.email}
+                {collaborator.profiles?.full_name || collaborator.profiles?.email || 'Unknown'}
               </span>
               <ChevronDown className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
             </button>
@@ -197,16 +197,16 @@ export function ProjectCollaboratorBar({ projectId }: ProjectCollaboratorBarProp
               <PopoverTrigger asChild>
                 <button className="relative group">
                   <Avatar className={cn("h-8 w-8 border-2 border-background shadow-sm cursor-pointer hover:z-10 hover:scale-110 transition-transform")}>
-                    <AvatarImage src={c.profiles.avatar_url || undefined} />
+                    <AvatarImage src={c.profiles?.avatar_url || undefined} />
                     <AvatarFallback className="text-xs bg-accent text-accent-foreground">
-                      {getInitials(c.profiles.full_name, c.profiles.email)}
+                      {getInitials(c.profiles?.full_name ?? null, c.profiles?.email ?? '')}
                     </AvatarFallback>
                   </Avatar>
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-48 p-3" align="center">
-                <div className="text-sm font-medium">{c.profiles.full_name || c.profiles.email}</div>
-                {c.profiles.full_name && (
+                <div className="text-sm font-medium">{c.profiles?.full_name || c.profiles?.email || 'Unknown'}</div>
+                {c.profiles?.full_name && (
                   <div className="text-xs text-muted-foreground">{c.profiles.email}</div>
                 )}
                 <Button
