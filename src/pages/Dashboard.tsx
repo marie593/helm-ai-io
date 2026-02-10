@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -9,6 +10,7 @@ import {
   Plus,
   TrendingUp,
   Clock,
+  Filter,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { AppLayout } from '@/components/layout/AppLayout';
@@ -17,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { HealthScore } from '@/components/ui/health-score';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Project, Customer } from '@/types/database';
 
 interface ProjectWithCustomer extends Project {
@@ -24,6 +27,20 @@ interface ProjectWithCustomer extends Project {
 }
 
 export default function Dashboard() {
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string>('all');
+
+  const { data: customers } = useQuery({
+    queryKey: ['customers-filter'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('customers')
+        .select('id, name')
+        .order('name');
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const { data: projects, isLoading: projectsLoading } = useQuery({
     queryKey: ['projects'],
     queryFn: async () => {
@@ -31,7 +48,6 @@ export default function Dashboard() {
         .from('projects')
         .select('*, customers(*)')
         .order('created_at', { ascending: false });
-      
       if (error) throw error;
       return data as unknown as ProjectWithCustomer[];
     },
@@ -45,10 +61,8 @@ export default function Dashboard() {
         supabase.from('projects').select('id, status, health_score'),
         supabase.from('tasks').select('id, status'),
       ]);
-
       const allProjects = projectsRes.data || [];
       const allTasks = tasksRes.data || [];
-
       return {
         totalCustomers: customersRes.count || 0,
         totalProjects: allProjects.length,
@@ -60,26 +74,60 @@ export default function Dashboard() {
     },
   });
 
-  const atRiskProjects = projects?.filter(
-    (p) => p.status === 'at_risk' || (p.health_score && p.health_score < 50)
+  const filteredProjects = projects?.filter(
+    (p) => selectedCustomerId === 'all' || p.customer_id === selectedCustomerId
   ) || [];
 
-  const recentProjects = projects?.slice(0, 5) || [];
+  const atRiskProjects = filteredProjects.filter(
+    (p) => p.status === 'at_risk' || (p.health_score && p.health_score < 50)
+  );
+
+  const recentProjects = filteredProjects.slice(0, 5);
 
   return (
     <AppLayout
       title="Dashboard"
       description="Overview of all your implementations"
       actions={
-        <Button asChild>
-          <Link to="/projects/new">
-            <Plus className="h-4 w-4 mr-2" />
-            New Project
-          </Link>
-        </Button>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <Select value={selectedCustomerId} onValueChange={setSelectedCustomerId}>
+              <SelectTrigger className="w-[180px] h-9 bg-secondary/50">
+                <SelectValue placeholder="All Customers" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Customers</SelectItem>
+                {customers?.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Button asChild>
+            <Link to="/projects/new">
+              <Plus className="h-4 w-4 mr-2" />
+              New Project
+            </Link>
+          </Button>
+        </div>
       }
     >
-      <div className="space-y-6 animate-fade-in">
+      <div className="space-y-8 animate-fade-in">
+        {/* Welcome Banner */}
+        <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/10 p-6">
+          <div className="relative z-10">
+            <h2 className="text-2xl font-bold text-foreground">
+              Welcome back 👋
+            </h2>
+            <p className="text-muted-foreground mt-1 max-w-lg">
+              Here's what's happening across your implementations today.
+            </p>
+          </div>
+          <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-primary/5 blur-2xl" />
+          <div className="absolute -right-4 -bottom-8 h-24 w-24 rounded-full bg-accent/5 blur-xl" />
+        </div>
+
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatsCard
@@ -87,35 +135,42 @@ export default function Dashboard() {
             value={stats?.totalCustomers || 0}
             icon={Users}
             loading={statsLoading}
+            gradient="from-info/10 to-info/5"
+            iconColor="text-info"
           />
           <StatsCard
             title="Active Projects"
             value={stats?.activeProjects || 0}
             icon={FolderKanban}
             loading={statsLoading}
+            gradient="from-primary/10 to-primary/5"
+            iconColor="text-primary"
           />
           <StatsCard
             title="At Risk"
             value={stats?.atRiskProjects || 0}
             icon={AlertTriangle}
-            variant="warning"
             loading={statsLoading}
+            gradient="from-warning/10 to-warning/5"
+            iconColor="text-warning"
           />
           <StatsCard
             title="Tasks Completed"
             value={`${stats?.completedTasks || 0}/${stats?.totalTasks || 0}`}
             icon={CheckCircle2}
             loading={statsLoading}
+            gradient="from-success/10 to-success/5"
+            iconColor="text-success"
           />
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Recent Projects */}
-          <Card className="lg:col-span-2 shadow-card">
+          <Card className="lg:col-span-2 shadow-card border-0 bg-card">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-lg font-semibold">Recent Projects</CardTitle>
               <Button variant="ghost" size="sm" asChild>
-                <Link to="/projects" className="text-muted-foreground">
+                <Link to="/projects" className="text-muted-foreground hover:text-primary">
                   View all
                   <ArrowRight className="h-4 w-4 ml-1" />
                 </Link>
@@ -130,11 +185,12 @@ export default function Dashboard() {
                 </div>
               ) : recentProjects.length > 0 ? (
                 <div className="divide-y divide-border">
-                  {recentProjects.map((project) => (
+                  {recentProjects.map((project, idx) => (
                     <Link
                       key={project.id}
                       to={`/projects/${project.id}`}
                       className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
+                      style={{ animationDelay: `${idx * 50}ms` }}
                     >
                       <div className="flex items-center gap-4">
                         <HealthScore score={project.health_score || 100} />
@@ -165,10 +221,12 @@ export default function Dashboard() {
           </Card>
 
           {/* At Risk Projects */}
-          <Card className="shadow-card">
+          <Card className="shadow-card border-0 bg-card">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-warning" />
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-warning/10">
+                  <AlertTriangle className="h-4 w-4 text-warning" />
+                </div>
                 Needs Attention
               </CardTitle>
             </CardHeader>
@@ -201,8 +259,11 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <div className="p-6 text-center">
-                  <CheckCircle2 className="h-8 w-8 mx-auto text-success mb-2" />
-                  <p className="text-sm text-muted-foreground">All projects healthy!</p>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-success/10 mx-auto mb-3">
+                    <CheckCircle2 className="h-6 w-6 text-success" />
+                  </div>
+                  <p className="text-sm font-medium text-foreground">All projects healthy!</p>
+                  <p className="text-xs text-muted-foreground mt-1">No action needed</p>
                 </div>
               )}
             </CardContent>
@@ -239,17 +300,19 @@ function StatsCard({
   title,
   value,
   icon: Icon,
-  variant = 'default',
   loading,
+  gradient,
+  iconColor,
 }: {
   title: string;
   value: number | string;
   icon: React.ElementType;
-  variant?: 'default' | 'warning';
   loading?: boolean;
+  gradient: string;
+  iconColor: string;
 }) {
   return (
-    <Card className="shadow-card">
+    <Card className="shadow-card border-0 bg-card overflow-hidden">
       <CardContent className="pt-6">
         <div className="flex items-center justify-between">
           <div>
@@ -261,15 +324,9 @@ function StatsCard({
             )}
           </div>
           <div
-            className={`flex h-10 w-10 items-center justify-center rounded-lg ${
-              variant === 'warning' ? 'bg-warning/10' : 'bg-primary/10'
-            }`}
+            className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${gradient}`}
           >
-            <Icon
-              className={`h-5 w-5 ${
-                variant === 'warning' ? 'text-warning' : 'text-primary'
-              }`}
-            />
+            <Icon className={`h-5 w-5 ${iconColor}`} />
           </div>
         </div>
       </CardContent>
@@ -290,14 +347,14 @@ function QuickActionCard({
 }) {
   return (
     <Link to={href}>
-      <Card className="shadow-card hover:shadow-elevated transition-shadow cursor-pointer group">
+      <Card className="shadow-card border-0 bg-card hover:shadow-elevated transition-all duration-200 cursor-pointer group hover:-translate-y-0.5">
         <CardContent className="pt-6">
           <div className="flex items-start gap-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
               <Icon className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <p className="font-semibold text-foreground">{title}</p>
+              <p className="font-semibold text-foreground group-hover:text-primary transition-colors">{title}</p>
               <p className="text-sm text-muted-foreground mt-1">{description}</p>
             </div>
           </div>
