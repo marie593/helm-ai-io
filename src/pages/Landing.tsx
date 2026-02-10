@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Zap, ArrowRight, BarChart3, Users, Calendar, MessageSquare, Shield, Rocket, Linkedin } from 'lucide-react';
 import mariePhoto from '@/assets/marie-widmer.jpeg';
+import helmSailIcon from '@/assets/helm-sail-icon.png';
 import { Button } from '@/components/ui/button';
 
 export default function Landing() {
@@ -11,7 +12,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto flex items-center justify-between px-6 h-16">
           <Link to="/" className="flex items-center gap-2">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-              <Zap className="h-5 w-5 text-primary-foreground" />
+              <img src={helmSailIcon} alt="HelmAI" className="h-5 w-5" />
             </div>
             <span className="text-lg font-bold tracking-tight">HelmAI</span>
           </Link>
@@ -115,7 +116,7 @@ export default function Landing() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
-                <Zap className="h-4 w-4 text-primary-foreground" />
+                <img src={helmSailIcon} alt="HelmAI" className="h-4 w-4" />
               </div>
               <span className="text-sm font-semibold">HelmAI</span>
             </div>
