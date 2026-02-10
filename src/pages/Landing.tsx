@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Zap, ArrowRight, BarChart3, Users, Calendar, MessageSquare, Shield, Rocket } from 'lucide-react';
+import mariePhoto from '@/assets/marie-widmer.jpeg';
 import { Button } from '@/components/ui/button';
 
 export default function Landing() {
@@ -86,6 +87,20 @@ export default function Landing() {
           <p className="text-muted-foreground leading-relaxed">
             HelmAI was born from the frustration of managing complex SaaS implementations with spreadsheets and scattered tools. We believe every customer deserves a smooth, transparent onboarding experience — and every implementation team deserves intelligent tools that remove busywork and surface what matters. Our mission is to make customer success the default outcome, not the exception.
           </p>
+          <div className="mt-10 flex flex-col items-center gap-4">
+            <img
+              src={mariePhoto}
+              alt="Marie Widmer, Founder of HelmAI"
+              className="h-28 w-28 rounded-full object-cover border-2 border-primary/20"
+            />
+            <div className="text-center space-y-1">
+              <h3 className="font-semibold text-lg">Marie Widmer</h3>
+              <p className="text-sm text-primary font-medium">Founder</p>
+              <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
+                Lawyer turned Ops Lead who spent 10+ years implementing software for legal teams — seeing all of the challenges, surprises and disappointments that came with missed expectations, manual tracking and unclear wins.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
