@@ -11,6 +11,7 @@ interface GenerateRoadmapRequest {
   projectBrief: string;
   startDate?: string;
   durationDays?: number;
+  refresh?: boolean;
 }
 
 serve(async (req) => {
@@ -36,9 +37,9 @@ serve(async (req) => {
       });
     }
 
-    const { projectId, projectBrief, startDate, durationDays = 90 }: GenerateRoadmapRequest = await req.json();
+    const { projectId, projectBrief, startDate, durationDays = 90, refresh = false }: GenerateRoadmapRequest = await req.json();
 
-    if (!projectId || !projectBrief) {
+    if (!projectId || (!projectBrief && !refresh)) {
       return new Response(JSON.stringify({ error: "projectId and projectBrief are required" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -46,7 +47,100 @@ serve(async (req) => {
     }
 
     const start = startDate ? new Date(startDate) : new Date();
-    console.log(`Generating ${durationDays}-day roadmap for project ${projectId}`);
+    console.log(`${refresh ? 'Refreshing' : 'Generating'} ${durationDays}-day roadmap for project ${projectId}`);
+
+    // Gather project context for AI
+    let contextSections: string[] = [];
+
+    if (refresh) {
+      // Fetch existing milestones & tasks
+      const { data: existingMilestones } = await supabase
+        .from("milestones")
+        .select("*")
+        .eq("project_id", projectId)
+        .order("order_index");
+
+      const { data: existingTasks } = await supabase
+        .from("tasks")
+        .select("*")
+        .eq("project_id", projectId)
+        .order("due_date");
+
+      if (existingMilestones?.length) {
+        contextSections.push(`CURRENT MILESTONES:\n${existingMilestones.map(m =>
+          `- ${m.name} (${m.status}, target: ${m.target_date})${m.description ? ': ' + m.description : ''}`
+        ).join('\n')}`);
+      }
+
+      if (existingTasks?.length) {
+        contextSections.push(`CURRENT TASKS:\n${existingTasks.map(t =>
+          `- ${t.title} [${t.status}, ${t.priority}]${t.due_date ? ' due ' + t.due_date : ''}`
+        ).join('\n')}`);
+      }
+
+      // Fetch calendar events
+      const { data: calendarEvents } = await supabase
+        .from("calendar_events")
+        .select("*")
+        .eq("project_id", projectId)
+        .order("event_date");
+
+      if (calendarEvents?.length) {
+        contextSections.push(`CALENDAR EVENTS:\n${calendarEvents.map(e =>
+          `- ${e.title} (${e.event_type || 'event'}, ${e.event_date})${e.description ? ': ' + e.description : ''}`
+        ).join('\n')}`);
+      }
+
+      // Fetch feedback items
+      const { data: feedbackItems } = await supabase
+        .from("feedback_items")
+        .select("*")
+        .eq("project_id", projectId)
+        .order("created_at", { ascending: false })
+        .limit(50);
+
+      if (feedbackItems?.length) {
+        contextSections.push(`RECENT FEEDBACK:\n${feedbackItems.map(f =>
+          `- [${f.type}/${f.priority}/${f.status}] ${f.title}${f.ai_summary ? ': ' + f.ai_summary : ''}`
+        ).join('\n')}`);
+      }
+
+      // Fetch recent chat activity
+      const { data: chatActivity } = await supabase
+        .from("activity_feed")
+        .select("*")
+        .eq("project_id", projectId)
+        .in("activity_type", ["chat_message", "email_imported", "slack_message"])
+        .order("created_at", { ascending: false })
+        .limit(30);
+
+      if (chatActivity?.length) {
+        contextSections.push(`RECENT CHAT/COMMUNICATION:\n${chatActivity.map(a =>
+          `- ${a.title}: ${a.description?.slice(0, 200) || ''}`
+        ).join('\n')}`);
+      }
+
+      // Delete existing milestones and tasks to regenerate
+      await supabase.from("tasks").delete().eq("project_id", projectId);
+      await supabase.from("milestones").delete().eq("project_id", projectId);
+    }
+
+    const contextBlock = contextSections.length > 0
+      ? `\n\nPROJECT CONTEXT (use this to inform your updated roadmap):\n${contextSections.join('\n\n')}`
+      : '';
+
+    const userPrompt = refresh
+      ? `Refresh and update the implementation roadmap for this project. Analyze the current progress, calendar events, feedback, and communications to produce an updated ${durationDays}-day roadmap starting from ${start.toISOString().split('T')[0]}.
+
+${projectBrief ? `Original project brief: ${projectBrief}` : ''}
+${contextBlock}
+
+Adjust milestones, reprioritize tasks based on feedback and communications, and reflect any calendar commitments. Mark phases that should be further along based on context.`
+      : `Generate a ${durationDays}-day implementation roadmap starting from ${start.toISOString().split('T')[0]} for this project:
+
+${projectBrief}
+
+Create milestones with specific tasks, target dates, and priorities.`;
 
     // Call AI to generate roadmap
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -75,11 +169,7 @@ Each milestone should have 3-6 specific tasks. Be realistic about timelines.`
           },
           {
             role: "user",
-            content: `Generate a ${durationDays}-day implementation roadmap starting from ${start.toISOString().split('T')[0]} for this project:
-
-${projectBrief}
-
-Create milestones with specific tasks, target dates, and priorities.`
+            content: userPrompt
           }
         ],
         tools: [
