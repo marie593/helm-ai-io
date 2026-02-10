@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday } from 'date-fns';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { BookCallDialog } from './BookCallDialog';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -90,7 +91,8 @@ export function ProjectCalendar({ projectId }: ProjectCalendarProps) {
           <Button variant="outline" size="icon" onClick={nextMonth}>
             <ChevronRight className="h-4 w-4" />
           </Button>
-          <Button size="sm" className="ml-4">
+          <BookCallDialog projectId={projectId} />
+          <Button size="sm" className="ml-2">
             <Plus className="h-4 w-4 mr-2" />
             Add Event
           </Button>
