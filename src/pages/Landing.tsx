@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Zap, ArrowRight, BarChart3, Users, Calendar, MessageSquare, Shield, Rocket } from 'lucide-react';
+import { Zap, ArrowRight, BarChart3, Users, Calendar, MessageSquare, Shield, Rocket, Linkedin } from 'lucide-react';
 import mariePhoto from '@/assets/marie-widmer.jpeg';
 import { Button } from '@/components/ui/button';
 
@@ -95,7 +95,12 @@ export default function Landing() {
             />
             <div className="text-center space-y-1">
               <h3 className="font-semibold text-lg">Marie Widmer</h3>
-              <p className="text-sm text-primary font-medium">Founder</p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-primary font-medium">Founder</p>
+                <a href="https://www.linkedin.com/in/mariewidmer/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                  <Linkedin className="h-4 w-4" />
+                </a>
+              </div>
               <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
                 Lawyer turned Ops Lead who spent 10+ years implementing software for legal teams — seeing all of the challenges, surprises and disappointments that came with missed expectations, manual tracking and unclear wins.
               </p>
