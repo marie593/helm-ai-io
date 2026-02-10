@@ -23,7 +23,7 @@ export default function AuthPage() {
 
   // Redirect if already logged in
   if (user) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/home" replace />;
   }
 
   return (
