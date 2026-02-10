@@ -1026,7 +1026,7 @@ export type Database = {
         | "completed"
         | "on_hold"
       task_status: "todo" | "in_progress" | "blocked" | "completed"
-      vendor_role: "admin" | "team_member"
+      vendor_role: "admin" | "team_member" | "super_admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1180,7 +1180,7 @@ export const Constants = {
         "on_hold",
       ],
       task_status: ["todo", "in_progress", "blocked", "completed"],
-      vendor_role: ["admin", "team_member"],
+      vendor_role: ["admin", "team_member", "super_admin"],
     },
   },
 } as const
