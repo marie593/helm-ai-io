@@ -294,6 +294,33 @@ export type Database = {
         }
         Relationships: []
       }
+      demo_requests: {
+        Row: {
+          company_name: string
+          company_size: string
+          created_at: string
+          full_name: string
+          id: string
+          work_email: string
+        }
+        Insert: {
+          company_name: string
+          company_size: string
+          created_at?: string
+          full_name: string
+          id?: string
+          work_email: string
+        }
+        Update: {
+          company_name?: string
+          company_size?: string
+          created_at?: string
+          full_name?: string
+          id?: string
+          work_email?: string
+        }
+        Relationships: []
+      }
       feedback_items: {
         Row: {
           ai_extracted_actions: Json | null
