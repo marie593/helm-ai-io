@@ -4,24 +4,26 @@ import { Zap } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { SignupForm } from '@/components/auth/SignupForm';
+import { DemoRequestForm } from '@/components/auth/DemoRequestForm';
 import { Card, CardContent } from '@/components/ui/card';
 
 export default function AuthPage() {
   const [searchParams] = useSearchParams();
   const inviteToken = searchParams.get('invite');
   const inviteEmail = searchParams.get('email');
-  
-  const [isLogin, setIsLogin] = useState(!inviteToken);
+
+  // Only show signup if there's an invite token
+  const [mode, setMode] = useState<'login' | 'signup' | 'demo'>(
+    inviteToken ? 'signup' : 'login'
+  );
   const { user } = useAuth();
 
-  // If there's an invite token, default to signup mode
   useEffect(() => {
     if (inviteToken) {
-      setIsLogin(false);
+      setMode('signup');
     }
   }, [inviteToken]);
 
-  // Redirect if already logged in
   if (user) {
     return <Navigate to="/home" replace />;
   }
@@ -57,7 +59,7 @@ export default function AuthPage() {
             <h1 className="text-2xl font-bold text-foreground">HelmAI</h1>
           </div>
 
-          {inviteToken && !isLogin && (
+          {mode === 'signup' && inviteToken && (
             <Card className="bg-primary/5 border-primary/20">
               <CardContent className="pt-4">
                 <p className="text-sm text-center">
@@ -73,35 +75,55 @@ export default function AuthPage() {
 
           <div>
             <h2 className="text-2xl font-bold text-foreground">
-              {isLogin ? 'Welcome back' : 'Create your account'}
+              {mode === 'login' && 'Welcome back'}
+              {mode === 'signup' && 'Create your account'}
+              {mode === 'demo' && 'Request a Demo'}
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              {isLogin
-                ? "Sign in to manage your implementations"
-                : 'Start managing your SaaS implementations'}
+              {mode === 'login' && 'Sign in to manage your implementations'}
+              {mode === 'signup' && 'Start managing your SaaS implementations'}
+              {mode === 'demo' && 'Fill out the form below and we\'ll reach out to schedule a demo'}
             </p>
           </div>
 
-          {isLogin ? (
-            <LoginForm />
-          ) : (
-            <SignupForm 
-              onSuccess={() => setIsLogin(true)} 
+          {mode === 'login' && <LoginForm />}
+          {mode === 'signup' && (
+            <SignupForm
+              onSuccess={() => setMode('login')}
               inviteToken={inviteToken || undefined}
               defaultEmail={inviteEmail || undefined}
             />
           )}
+          {mode === 'demo' && <DemoRequestForm />}
 
-          <div className="text-center">
-            <button
-              type="button"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              onClick={() => setIsLogin(!isLogin)}
-            >
-              {isLogin
-                ? "Don't have an account? Sign up"
-                : 'Already have an account? Sign in'}
-            </button>
+          <div className="text-center space-y-2">
+            {mode === 'login' && (
+              <button
+                type="button"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => setMode('demo')}
+              >
+                Don't have an account? Request a demo
+              </button>
+            )}
+            {mode === 'demo' && (
+              <button
+                type="button"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => setMode('login')}
+              >
+                Already have an account? Sign in
+              </button>
+            )}
+            {mode === 'signup' && (
+              <button
+                type="button"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => setMode('login')}
+              >
+                Already have an account? Sign in
+              </button>
+            )}
           </div>
         </div>
       </div>
