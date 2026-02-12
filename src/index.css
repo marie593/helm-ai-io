@@ -19,9 +19,9 @@
     --popover: 40 15% 99%;
     --popover-foreground: 220 10% 35%;
 
-    /* Primary - Teal from logo */
-    --primary: 195 45% 35%;
-    --primary-foreground: 0 0% 98%;
+    /* Primary - Sage green from logo background */
+    --primary: 150 18% 60%;
+    --primary-foreground: 0 0% 100%;
 
     /* Secondary - Warm off-white */
     --secondary: 40 15% 94%;
@@ -47,7 +47,7 @@
 
     --border: 40 15% 88%;
     --input: 40 15% 88%;
-    --ring: 195 45% 35%;
+    --ring: 150 18% 60%;
 
     --radius: 0.75rem;
 
