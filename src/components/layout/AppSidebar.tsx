@@ -11,6 +11,7 @@ import {
   ChevronDown,
   Plug,
 } from 'lucide-react';
+import helmIcon from '@/assets/helm-icon.png';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -55,9 +56,7 @@ export function AppSidebar() {
     <aside className="flex h-screen w-64 flex-col bg-sidebar border-r border-sidebar-border">
       {/* Logo */}
       <div className="flex h-16 items-center gap-2 px-6 border-b border-sidebar-border">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary">
-          <Zap className="h-4 w-4 text-sidebar-primary-foreground" />
-        </div>
+        <img src={helmIcon} alt="HelmAI" className="h-8 w-8 rounded-lg object-contain" />
         <span className="text-lg font-semibold text-sidebar-foreground">
           HelmAI
         </span>
