@@ -61,21 +61,21 @@ export default function Landing() {
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { icon: BarChart3, title: 'Smart Roadmaps', desc: 'AI-generated project plans tailored to each customer\'s needs.' },
-              { icon: Users, title: 'Collaboration Hub', desc: 'Shared workspace for vendor teams and customer stakeholders.' },
-              { icon: Calendar, title: 'Calendar & Scheduling', desc: 'Built-in booking and calendar sync to keep meetings on track.' },
-              { icon: MessageSquare, title: 'Feedback Tracking', desc: 'Capture, categorize, and act on customer feedback in real time.' },
-              { icon: Shield, title: 'Health Scoring', desc: 'Proactive risk detection with AI-powered health scores.' },
-              { icon: Rocket, title: 'Insights & Digests', desc: 'Automated weekly digests and cross-project product insights.' },
-            ].map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="rounded-xl border border-border bg-card p-6 space-y-3">
+            { icon: BarChart3, title: 'Smart Roadmaps', desc: 'AI-generated project plans tailored to each customer\'s needs.' },
+            { icon: Users, title: 'Collaboration Hub', desc: 'Shared workspace for vendor teams and customer stakeholders.' },
+            { icon: Calendar, title: 'Calendar & Scheduling', desc: 'Built-in booking and calendar sync to keep meetings on track.' },
+            { icon: MessageSquare, title: 'Feedback Tracking', desc: 'Capture, categorize, and act on customer feedback in real time.' },
+            { icon: Shield, title: 'Health Scoring', desc: 'Proactive risk detection with AI-powered health scores.' },
+            { icon: Rocket, title: 'Insights & Digests', desc: 'Automated weekly digests and cross-project product insights.' }].
+            map(({ icon: Icon, title, desc }) =>
+            <div key={title} className="rounded-xl border border-border bg-card p-6 space-y-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                   <Icon className="h-5 w-5 text-primary" />
                 </div>
                 <h3 className="font-semibold">{title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>
@@ -84,15 +84,15 @@ export default function Landing() {
       <section id="about" className="border-t border-border px-6 py-20">
         <div className="max-w-3xl mx-auto text-center space-y-6">
           <h2 className="text-3xl font-bold tracking-tight">About Us</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            HelmAI was born from the frustration of managing complex SaaS implementations with spreadsheets and scattered tools. We believe every customer deserves a smooth, transparent onboarding experience — and every implementation team deserves intelligent tools that remove busywork and surface what matters. Our mission is to make customer success the default outcome, not the exception.
-          </p>
+          <p className="text-muted-foreground leading-relaxed">HelmAI was born from the frustration of managing complex SaaS implementations with spreadsheets and scattered tools.
+
+We believe onboarding shouldn’t feel chaotic - for customers or for the teams responsible for delivering value. That’s why we’re building Implementation Intelligence: a new layer that turns conversations, milestones, and commitments into structured execution.
+
+Our mission is simple: make predictable customer success the default, not the exception.</p>
           <div className="mt-10 flex flex-col items-center gap-4">
-            <img
-              src={mariePhoto}
-              alt="Marie Widmer, Founder of HelmAI"
-              className="h-28 w-28 rounded-full object-cover border-2 border-primary/20"
-            />
+            <img src={mariePhoto} alt="Marie Widmer, Founder of HelmAI"
+              className="h-28 w-28 rounded-full object-cover border-2 border-primary/20" />
+
             <div className="text-center space-y-1">
               <h3 className="font-semibold text-lg">Marie Widmer</h3>
               <div className="flex items-center justify-center gap-2">
@@ -101,8 +101,8 @@ export default function Landing() {
                   <Linkedin className="h-4 w-4" />
                 </a>
               </div>
-              <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
-                Lawyer turned Ops Lead who spent 10+ years implementing software for legal teams — seeing all of the challenges and surprises, including missed expectations, manual tracking and unclear wins.
+              <p className="text-sm text-muted-foreground max-w-md leading-relaxed">HelmAI is founded by a lawyer-turned-ops lead who spent 10+ years implementing SaaS. Across dozens of implementations, the same friction appeared: misaligned expectations, manual tracking, and unclear wins at renewal. The problem wasn’t the product - it was the lack of execution intelligence.
+
               </p>
             </div>
           </div>
@@ -130,6 +130,6 @@ export default function Landing() {
           </p>
         </div>
       </footer>
-    </div>
-  );
+    </div>);
+
 }
