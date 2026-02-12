@@ -22,6 +22,7 @@ import CustomerNew from "./pages/CustomerNew";
 import CustomerDetail from "./pages/CustomerDetail";
 import ProjectNew from "./pages/ProjectNew";
 import NotFound from "./pages/NotFound";
+import WaitlistForm from "./components/auth/WaitlistForm";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
           <Sonner />
           <Routes>
             <Route path="/" element={<Landing />} />
+            <Route path="/waitlist" element={<WaitlistForm />} />
             <Route path="/home" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route

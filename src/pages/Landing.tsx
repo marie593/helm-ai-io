@@ -41,8 +41,8 @@ export default function Landing() {
           </p>
           <div className="flex items-center justify-center gap-4 pt-4">
             <Button asChild size="lg" className="gap-2">
-              <Link to="/auth">
-                Get Started <ArrowRight className="h-4 w-4" />
+              <Link to="/waitlist">
+                Join Our Waitlist <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg">
