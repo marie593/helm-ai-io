@@ -19,9 +19,9 @@
     --popover: 40 15% 99%;
     --popover-foreground: 220 10% 35%;
 
-    /* Primary - Sage green */
-    --primary: 145 25% 45%;
-    --primary-foreground: 40 20% 98%;
+    /* Primary - Teal from logo */
+    --primary: 195 45% 35%;
+    --primary-foreground: 0 0% 98%;
 
     /* Secondary - Warm off-white */
     --secondary: 40 15% 94%;
@@ -30,40 +30,40 @@
     --muted: 40 12% 92%;
     --muted-foreground: 220 8% 55%;
 
-    /* Accent - Deeper sage for emphasis */
-    --accent: 145 30% 38%;
-    --accent-foreground: 40 20% 98%;
+    /* Accent - Deep navy from logo hull */
+    --accent: 200 50% 22%;
+    --accent-foreground: 0 0% 98%;
 
     --destructive: 0 65% 55%;
     --destructive-foreground: 40 20% 98%;
 
     /* Status colors - Muted natural tones */
     --success: 145 40% 42%;
-    --success-foreground: 40 20% 98%;
+    --success-foreground: 0 0% 98%;
     --warning: 35 70% 55%;
-    --warning-foreground: 40 20% 98%;
+    --warning-foreground: 0 0% 98%;
     --info: 200 50% 50%;
-    --info-foreground: 40 20% 98%;
+    --info-foreground: 0 0% 98%;
 
     --border: 40 15% 88%;
     --input: 40 15% 88%;
-    --ring: 145 25% 45%;
+    --ring: 195 45% 35%;
 
     --radius: 0.75rem;
 
-    /* Sidebar - Sage tones */
-    --sidebar-background: 145 18% 22%;
-    --sidebar-foreground: 40 15% 92%;
-    --sidebar-primary: 145 30% 55%;
-    --sidebar-primary-foreground: 40 20% 98%;
-    --sidebar-accent: 145 18% 28%;
-    --sidebar-accent-foreground: 40 15% 92%;
-    --sidebar-border: 145 15% 30%;
-    --sidebar-ring: 145 30% 55%;
+    /* Sidebar - Navy/teal tones */
+    --sidebar-background: 200 45% 15%;
+    --sidebar-foreground: 200 15% 92%;
+    --sidebar-primary: 185 50% 50%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 200 40% 22%;
+    --sidebar-accent-foreground: 200 15% 92%;
+    --sidebar-border: 200 35% 25%;
+    --sidebar-ring: 185 50% 50%;
 
     /* Health score gradients */
-    --health-excellent: 145 45% 42%;
-    --health-good: 100 40% 45%;
+    --health-excellent: 175 45% 42%;
+    --health-good: 160 40% 45%;
     --health-warning: 35 70% 55%;
     --health-critical: 0 60% 55%;
   }
@@ -78,40 +78,40 @@
     --popover: 145 12% 13%;
     --popover-foreground: 40 12% 85%;
 
-    --primary: 145 30% 55%;
-    --primary-foreground: 145 12% 10%;
+    --primary: 185 50% 50%;
+    --primary-foreground: 200 45% 8%;
 
-    --secondary: 145 12% 18%;
-    --secondary-foreground: 40 12% 85%;
+    --secondary: 200 12% 18%;
+    --secondary-foreground: 200 12% 85%;
 
-    --muted: 145 12% 18%;
-    --muted-foreground: 40 10% 60%;
+    --muted: 200 12% 18%;
+    --muted-foreground: 200 10% 60%;
 
-    --accent: 145 35% 50%;
-    --accent-foreground: 145 12% 10%;
+    --accent: 195 45% 45%;
+    --accent-foreground: 200 45% 8%;
 
     --destructive: 0 55% 50%;
-    --destructive-foreground: 40 12% 85%;
+    --destructive-foreground: 200 12% 85%;
 
-    --success: 145 40% 50%;
-    --success-foreground: 145 12% 10%;
+    --success: 175 40% 50%;
+    --success-foreground: 200 45% 8%;
     --warning: 35 65% 55%;
-    --warning-foreground: 145 12% 10%;
+    --warning-foreground: 200 45% 8%;
     --info: 200 50% 55%;
-    --info-foreground: 145 12% 10%;
+    --info-foreground: 200 45% 8%;
 
-    --border: 145 12% 22%;
-    --input: 145 12% 22%;
-    --ring: 145 30% 55%;
+    --border: 200 12% 22%;
+    --input: 200 12% 22%;
+    --ring: 185 50% 50%;
 
-    --sidebar-background: 145 15% 8%;
-    --sidebar-foreground: 40 12% 85%;
-    --sidebar-primary: 145 35% 55%;
-    --sidebar-primary-foreground: 145 12% 10%;
-    --sidebar-accent: 145 12% 15%;
-    --sidebar-accent-foreground: 40 12% 85%;
-    --sidebar-border: 145 12% 18%;
-    --sidebar-ring: 145 35% 55%;
+    --sidebar-background: 200 45% 8%;
+    --sidebar-foreground: 200 12% 85%;
+    --sidebar-primary: 185 50% 50%;
+    --sidebar-primary-foreground: 200 45% 8%;
+    --sidebar-accent: 200 35% 15%;
+    --sidebar-accent-foreground: 200 12% 85%;
+    --sidebar-border: 200 30% 18%;
+    --sidebar-ring: 185 50% 50%;
   }
 }
 

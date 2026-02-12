@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
-import { Sailboat, ArrowRight, BarChart3, Users, Calendar, MessageSquare, Shield, Rocket, Linkedin } from 'lucide-react';
+import { ArrowRight, BarChart3, Users, Calendar, MessageSquare, Shield, Rocket, Linkedin } from 'lucide-react';
 import mariePhoto from '@/assets/marie-widmer.jpeg';
+import helmIcon from '@/assets/helm-icon.png';
+import helmLogo from '@/assets/helm-logo.png';
 import { Button } from '@/components/ui/button';
 
 export default function Landing() {
@@ -10,9 +12,7 @@ export default function Landing() {
       <header className="border-b border-border/50 backdrop-blur-sm sticky top-0 z-50 bg-background/80">
         <div className="max-w-6xl mx-auto flex items-center justify-between px-6 h-16">
           <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-              <Sailboat className="h-5 w-5 text-primary-foreground" />
-            </div>
+            <img src={helmIcon} alt="HelmAI" className="h-9 w-9 rounded-lg object-contain" />
             <span className="text-lg font-bold tracking-tight">HelmAI</span>
           </Link>
           <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
@@ -114,9 +114,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
-                <Sailboat className="h-4 w-4 text-primary-foreground" />
-              </div>
+              <img src={helmIcon} alt="HelmAI" className="h-7 w-7 rounded-md object-contain" />
               <span className="text-sm font-semibold">HelmAI</span>
             </div>
             <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
