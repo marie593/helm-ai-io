@@ -1,9 +1,8 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, BarChart3, Users, Calendar, MessageSquare, Shield, Rocket, Linkedin } from 'lucide-react';
+import { ArrowRight, Rocket, Linkedin } from 'lucide-react';
 import mariePhoto from '@/assets/marie-widmer.jpeg';
 import helmIcon from '@/assets/helm-icon.png';
 import helmLogo from '@/assets/helm-logo.png';
-import dashboardPreview from '@/assets/dashboard-preview.png';
 import { Button } from '@/components/ui/button';
 
 export default function Landing() {
@@ -17,7 +16,7 @@ export default function Landing() {
             <span className="text-lg font-bold tracking-tight">HelmAI</span>
           </Link>
           <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
-            <a href="#product" className="hover:text-foreground transition-colors">Product</a>
+            <Link to="/product" className="hover:text-foreground transition-colors">Product</Link>
             <a href="#about" className="hover:text-foreground transition-colors">About Us</a>
           </nav>
           <Button asChild size="sm">
@@ -47,48 +46,8 @@ export default function Landing() {
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <a href="#product">Learn More</a>
+              <Link to="/product">Learn More</Link>
             </Button>
-          </div>
-
-          {/* Product Dashboard Preview */}
-          <div className="mt-12 max-w-5xl mx-auto">
-            <p className="text-lg md:text-xl font-bold text-primary mb-6">See your implementation progress at a glance</p>
-            <div className="rounded-xl border border-border bg-card shadow-2xl overflow-hidden">
-              <img
-                src={dashboardPreview}
-                alt="HelmAI Dashboard - Project overview with health scores, roadmap milestones, and activity feed"
-                className="w-full h-auto"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Product */}
-      <section id="product" className="border-t border-border bg-secondary/30 px-6 py-20">
-        <div className="max-w-5xl mx-auto space-y-12">
-          <div className="text-center space-y-3">
-            <h2 className="text-3xl font-bold tracking-tight">Everything you need to manage implementations</h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">From kickoff to go-live, HelmAI keeps your team and customers aligned at every milestone.</p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-            { icon: BarChart3, title: 'Smart Roadmaps', desc: 'AI-generated project plans tailored to each customer\'s needs.' },
-            { icon: Users, title: 'Collaboration Hub', desc: 'Shared workspace for vendor teams and customer stakeholders.' },
-            { icon: Calendar, title: 'Calendar & Scheduling', desc: 'Built-in booking and calendar sync to keep meetings on track.' },
-            { icon: MessageSquare, title: 'Feedback Tracking', desc: 'Capture, categorize, and act on customer feedback in real time.' },
-            { icon: Shield, title: 'Health Scoring', desc: 'Proactive risk detection with AI-powered health scores.' },
-            { icon: Rocket, title: 'Insights & Digests', desc: 'Automated weekly digests and cross-project product insights.' }].
-            map(({ icon: Icon, title, desc }) =>
-            <div key={title} className="rounded-xl border border-border bg-card p-6 space-y-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                  <Icon className="h-5 w-5 text-primary" />
-                </div>
-                <h3 className="font-semibold">{title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
-              </div>
-            )}
           </div>
         </div>
       </section>
@@ -99,7 +58,7 @@ export default function Landing() {
           <h2 className="text-3xl font-bold tracking-tight">About Us</h2>
           <p className="text-muted-foreground leading-relaxed">HelmAI was born from the frustration of managing complex SaaS implementations with spreadsheets and scattered tools.
 
-We believe onboarding shouldn’t feel chaotic - for customers or for the teams responsible for delivering value. That’s why we’re building Implementation Intelligence: a new layer that turns conversations, milestones, and commitments into structured execution.
+We believe onboarding shouldn't feel chaotic - for customers or for the teams responsible for delivering value. That's why we're building Implementation Intelligence: a new layer that turns conversations, milestones, and commitments into structured execution.
 
 Our mission is simple: make predictable customer success the default, not the exception.</p>
           <div className="mt-10 flex flex-col items-center gap-4">
@@ -114,7 +73,7 @@ Our mission is simple: make predictable customer success the default, not the ex
                   <Linkedin className="h-4 w-4" />
                 </a>
               </div>
-              <p className="text-sm text-muted-foreground max-w-md leading-relaxed">HelmAI is founded by a lawyer-turned-ops lead who spent 10+ years implementing SaaS. Across dozens of implementations, the same friction appeared: misaligned expectations, manual tracking, and unclear wins at renewal. The problem wasn’t the product - it was the lack of execution intelligence.
+              <p className="text-sm text-muted-foreground max-w-md leading-relaxed">HelmAI is founded by a lawyer-turned-ops lead who spent 10+ years implementing SaaS. Across dozens of implementations, the same friction appeared: misaligned expectations, manual tracking, and unclear wins at renewal. The problem wasn't the product - it was the lack of execution intelligence.
 
               </p>
             </div>
@@ -143,6 +102,6 @@ Our mission is simple: make predictable customer success the default, not the ex
           </p>
         </div>
       </footer>
-    </div>);
-
+    </div>
+  );
 }
