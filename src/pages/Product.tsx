@@ -62,11 +62,11 @@ export default function Product() {
       <section className="border-t border-border px-6 py-16">
         <div className="max-w-5xl mx-auto text-center space-y-8">
           <p className="text-lg md:text-xl font-bold text-primary">See your implementation progress at a glance</p>
-          <div className="rounded-xl border border-border bg-card shadow-2xl overflow-hidden">
+          <div className="rounded-2xl border border-border bg-card shadow-2xl overflow-hidden">
             <img
               src={dashboardPreview}
               alt="HelmAI Dashboard - Project overview with health scores, roadmap milestones, and activity feed"
-              className="w-full h-auto"
+              className="w-full h-auto rounded-2xl"
             />
           </div>
         </div>
@@ -76,11 +76,11 @@ export default function Product() {
       <section className="border-t border-border bg-secondary/30 px-6 py-16">
         <div className="max-w-5xl mx-auto text-center space-y-8">
           <p className="text-lg md:text-xl font-bold text-primary">Track every customer project from kickoff to go-live</p>
-          <div className="rounded-xl border border-border bg-card shadow-2xl overflow-hidden">
+          <div className="rounded-2xl border border-border bg-card shadow-2xl overflow-hidden">
             <img
               src={projectPreview}
               alt="HelmAI Customer Project - Milestone timeline, task list, calendar, and team collaboration"
-              className="w-full h-auto"
+              className="w-full h-auto rounded-2xl"
             />
           </div>
         </div>
@@ -90,11 +90,11 @@ export default function Product() {
       <section className="border-t border-border px-6 py-16">
         <div className="max-w-5xl mx-auto text-center space-y-8">
           <p className="text-lg md:text-xl font-bold text-primary">Turn feedback into actionable product insights</p>
-          <div className="rounded-xl border border-border bg-card shadow-2xl overflow-hidden">
+          <div className="rounded-2xl border border-border bg-card shadow-2xl overflow-hidden">
             <img
               src={insightsPreview}
               alt="HelmAI Product Insights - Sentiment analysis, feedback themes, and trend tracking"
-              className="w-full h-auto"
+              className="w-full h-auto rounded-2xl"
             />
           </div>
         </div>
