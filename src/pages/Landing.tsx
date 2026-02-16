@@ -3,6 +3,7 @@ import { ArrowRight, BarChart3, Users, Calendar, MessageSquare, Shield, Rocket, 
 import mariePhoto from '@/assets/marie-widmer.jpeg';
 import helmIcon from '@/assets/helm-icon.png';
 import helmLogo from '@/assets/helm-logo.png';
+import dashboardPreview from '@/assets/dashboard-preview.png';
 import { Button } from '@/components/ui/button';
 
 export default function Landing() {
@@ -48,6 +49,18 @@ export default function Landing() {
             <Button asChild variant="outline" size="lg">
               <a href="#product">Learn More</a>
             </Button>
+          </div>
+
+          {/* Product Dashboard Preview */}
+          <div className="mt-12 max-w-5xl mx-auto">
+            <div className="rounded-xl border border-border bg-card shadow-2xl overflow-hidden">
+              <img
+                src={dashboardPreview}
+                alt="HelmAI Dashboard - Project overview with health scores, roadmap milestones, and activity feed"
+                className="w-full h-auto"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground mt-3">See your implementation progress at a glance</p>
           </div>
         </div>
       </section>
