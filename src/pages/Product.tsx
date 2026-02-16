@@ -28,22 +28,8 @@ export default function Product() {
         </Link>
       </div>
 
-      {/* Dashboard Preview */}
-      <section className="px-6 py-16">
-        <div className="max-w-5xl mx-auto text-center space-y-8">
-          <p className="text-lg md:text-xl font-bold text-primary">See your implementation progress at a glance</p>
-          <div className="rounded-xl border border-border bg-card shadow-2xl overflow-hidden">
-            <img
-              src={dashboardPreview}
-              alt="HelmAI Dashboard - Project overview with health scores, roadmap milestones, and activity feed"
-              className="w-full h-auto"
-            />
-          </div>
-        </div>
-      </section>
-
       {/* Feature Tiles */}
-      <section className="border-t border-border bg-secondary/30 px-6 py-20">
+      <section className="bg-secondary/30 px-6 py-20">
         <div className="max-w-5xl mx-auto space-y-12">
           <div className="text-center space-y-3">
             <h2 className="text-3xl font-bold tracking-tight">Everything you need to manage implementations</h2>
@@ -66,6 +52,20 @@ export default function Product() {
                 <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Dashboard Preview */}
+      <section className="border-t border-border px-6 py-16">
+        <div className="max-w-5xl mx-auto text-center space-y-8">
+          <p className="text-lg md:text-xl font-bold text-primary">See your implementation progress at a glance</p>
+          <div className="rounded-xl border border-border bg-card shadow-2xl overflow-hidden">
+            <img
+              src={dashboardPreview}
+              alt="HelmAI Dashboard - Project overview with health scores, roadmap milestones, and activity feed"
+              className="w-full h-auto"
+            />
           </div>
         </div>
       </section>
