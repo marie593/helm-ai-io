@@ -36,7 +36,7 @@ export default function Landing() {
             <span className="text-primary">for SaaS</span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            HelmAI automates SaaS implementation workflows with intelligent roadmaps, proactive risk detection, and AI-driven insights — ensuring every customer launch succeeds.
+            The first 90 days determine retention. Helm makes customer delivery intelligent — aligning teams, surfacing risk early, and turning launches into long-term revenue.
           </p>
           <div className="flex items-center justify-center gap-4 pt-4">
             <Button asChild size="lg" className="gap-2">
