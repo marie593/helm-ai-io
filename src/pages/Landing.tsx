@@ -29,7 +29,7 @@ export default function Landing() {
         <div className="max-w-3xl text-center space-y-6">
           <div className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/50 px-4 py-1.5 text-xs font-medium text-muted-foreground">
             <Rocket className="h-3.5 w-3.5" />
-            AI-Powered Implementation Intelligence
+            <span>AI-Powered Implementation Intelligence</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight">
             AI-powered customer{' '}
