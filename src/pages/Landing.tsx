@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Rocket, Linkedin } from 'lucide-react';
-import mariePhoto from '@/assets/marie-widmer.jpeg';
+import { ArrowRight, Rocket } from 'lucide-react';
 import helmIcon from '@/assets/helm-icon.png';
 import helmLogo from '@/assets/helm-logo.png';
 import { Button } from '@/components/ui/button';
@@ -17,7 +16,7 @@ export default function Landing() {
           </Link>
           <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
             <Link to="/product" className="hover:text-foreground transition-colors">Product</Link>
-            <a href="#about" className="hover:text-foreground transition-colors">About Us</a>
+            <Link to="/about" className="hover:text-foreground transition-colors">About Us</Link>
           </nav>
           <Button asChild size="sm">
             <Link to="/auth">Sign In</Link>
@@ -48,35 +47,6 @@ export default function Landing() {
             <Button asChild variant="outline" size="lg">
               <Link to="/product">Learn More</Link>
             </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* About */}
-      <section id="about" className="border-t border-border px-6 py-20">
-        <div className="max-w-3xl mx-auto text-center space-y-6">
-          <h2 className="text-3xl font-bold tracking-tight">About Us</h2>
-          <p className="text-muted-foreground leading-relaxed">HelmAI was born from the frustration of managing complex SaaS implementations with spreadsheets and scattered tools.
-
-We believe onboarding shouldn't feel chaotic - for customers or for the teams responsible for delivering value. That's why we're building Implementation Intelligence: a new layer that turns conversations, milestones, and commitments into structured execution.
-
-Our mission is simple: make predictable customer success the default, not the exception.</p>
-          <div className="mt-10 flex flex-col items-center gap-4">
-            <img src={mariePhoto} alt="Marie Widmer, Founder of HelmAI"
-              className="h-28 w-28 rounded-full object-cover border-2 border-primary/20" />
-
-            <div className="text-center space-y-1">
-              <h3 className="font-semibold text-lg">Marie Widmer</h3>
-              <div className="flex items-center justify-center gap-2">
-                <p className="text-sm text-primary font-medium">Founder</p>
-                <a href="https://www.linkedin.com/in/mariewidmer/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
-                  <Linkedin className="h-4 w-4" />
-                </a>
-              </div>
-              <p className="text-sm text-muted-foreground max-w-md leading-relaxed">HelmAI is founded by a lawyer-turned-ops lead who spent 10+ years implementing SaaS. Across dozens of implementations, the same friction appeared: misaligned expectations, manual tracking, and unclear wins at renewal. The problem wasn't the product - it was the lack of execution intelligence.
-
-              </p>
-            </div>
           </div>
         </div>
       </section>
