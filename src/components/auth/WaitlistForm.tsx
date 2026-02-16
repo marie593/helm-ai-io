@@ -49,18 +49,37 @@ export default function WaitlistForm() {
 
   const handleSubmit = async (data: WaitlistFormData) => {
     setIsLoading(true);
-    const { error } = await supabase.from('demo_requests').insert({
-      full_name: data.fullName,
-      work_email: data.workEmail,
-      company_name: data.companyName,
-      company_size: data.companySize,
-    });
-    setIsLoading(false);
+    try {
+      const { error } = await supabase.from('demo_requests').insert({
+        full_name: data.fullName,
+        work_email: data.workEmail,
+        company_name: data.companyName,
+        company_size: data.companySize,
+      });
 
-    if (error) {
-      toast({ variant: 'destructive', title: 'Something went wrong', description: 'Please try again later.' });
-    } else {
+      if (error) {
+        toast({ variant: 'destructive', title: 'Something went wrong', description: 'Please try again later.' });
+        return;
+      }
+
+      // Send notification email (fire-and-forget, don't block success)
+      supabase.functions.invoke('notify-waitlist', {
+        body: {
+          fullName: data.fullName,
+          workEmail: data.workEmail,
+          companyName: data.companyName,
+          companySize: data.companySize,
+          role: data.role,
+          topPainPoint: data.topPainPoint,
+        },
+      }).catch((err) => console.error('Notification email failed:', err));
+
       setIsSubmitted(true);
+    } catch (err) {
+      console.error('Waitlist submission error:', err);
+      toast({ variant: 'destructive', title: 'Something went wrong', description: 'Please try again later.' });
+    } finally {
+      setIsLoading(false);
     }
   };
 
