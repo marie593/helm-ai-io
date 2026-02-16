@@ -412,45 +412,6 @@ export type Database = {
           },
         ]
       }
-      gmail_integrations: {
-        Row: {
-          access_token: string
-          created_at: string
-          email_address: string | null
-          history_id: string | null
-          id: string
-          last_sync_at: string | null
-          refresh_token: string | null
-          token_expires_at: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          access_token: string
-          created_at?: string
-          email_address?: string | null
-          history_id?: string | null
-          id?: string
-          last_sync_at?: string | null
-          refresh_token?: string | null
-          token_expires_at?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          access_token?: string
-          created_at?: string
-          email_address?: string | null
-          history_id?: string | null
-          id?: string
-          last_sync_at?: string | null
-          refresh_token?: string | null
-          token_expires_at?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       google_calendar_integrations: {
         Row: {
           calendar_id: string
@@ -487,87 +448,6 @@ export type Database = {
             foreignKeyName: "google_calendar_integrations_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: true
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      imported_emails: {
-        Row: {
-          ai_action_items: Json | null
-          ai_sentiment: string | null
-          ai_summary: string | null
-          body_html: string | null
-          body_text: string | null
-          created_at: string
-          gmail_integration_id: string
-          gmail_message_id: string
-          id: string
-          labels: string[] | null
-          processed_at: string | null
-          project_id: string | null
-          received_at: string | null
-          recipient: string | null
-          sender: string | null
-          sender_email: string | null
-          snippet: string | null
-          subject: string | null
-          thread_id: string | null
-        }
-        Insert: {
-          ai_action_items?: Json | null
-          ai_sentiment?: string | null
-          ai_summary?: string | null
-          body_html?: string | null
-          body_text?: string | null
-          created_at?: string
-          gmail_integration_id: string
-          gmail_message_id: string
-          id?: string
-          labels?: string[] | null
-          processed_at?: string | null
-          project_id?: string | null
-          received_at?: string | null
-          recipient?: string | null
-          sender?: string | null
-          sender_email?: string | null
-          snippet?: string | null
-          subject?: string | null
-          thread_id?: string | null
-        }
-        Update: {
-          ai_action_items?: Json | null
-          ai_sentiment?: string | null
-          ai_summary?: string | null
-          body_html?: string | null
-          body_text?: string | null
-          created_at?: string
-          gmail_integration_id?: string
-          gmail_message_id?: string
-          id?: string
-          labels?: string[] | null
-          processed_at?: string | null
-          project_id?: string | null
-          received_at?: string | null
-          recipient?: string | null
-          sender?: string | null
-          sender_email?: string | null
-          snippet?: string | null
-          subject?: string | null
-          thread_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "imported_emails_gmail_integration_id_fkey"
-            columns: ["gmail_integration_id"]
-            isOneToOne: false
-            referencedRelation: "gmail_integrations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "imported_emails_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
