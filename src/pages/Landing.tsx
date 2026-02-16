@@ -27,7 +27,7 @@ export default function Landing() {
       {/* Hero */}
       <section className="flex-1 flex items-center justify-center px-6 py-24 md:py-32">
         <div className="max-w-3xl text-center space-y-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/50 px-4 py-1.5 text-xs font-medium text-muted-foreground">
+          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/50 px-4 py-1.5 text-xs font-medium text-muted-foreground">AI-Powered Implementation Intelligence
             <Rocket className="h-3.5 w-3.5" />
             AI-Powered Implementation Management
           </div>
@@ -72,6 +72,6 @@ export default function Landing() {
           </p>
         </div>
       </footer>
-    </div>
-  );
+    </div>);
+
 }
