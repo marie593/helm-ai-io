@@ -32,8 +32,8 @@ export default function Landing() {
             <span>AI-Powered Implementation Intelligence</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight">
-            AI-powered customer{' '}
-            <span className="text-primary">implementations</span>
+            Execution Is the Next{' '}
+            <span className="text-primary">AI Layer</span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             HelmAI automates SaaS implementation workflows with intelligent roadmaps, proactive risk detection, and AI-driven insights — ensuring every customer launch succeeds.
