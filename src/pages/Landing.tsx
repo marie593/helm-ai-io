@@ -53,6 +53,7 @@ export default function Landing() {
 
           {/* Product Dashboard Preview */}
           <div className="mt-12 max-w-5xl mx-auto">
+            <p className="text-lg md:text-xl font-bold text-primary mb-6">See your implementation progress at a glance</p>
             <div className="rounded-xl border border-border bg-card shadow-2xl overflow-hidden">
               <img
                 src={dashboardPreview}
@@ -60,7 +61,6 @@ export default function Landing() {
                 className="w-full h-auto"
               />
             </div>
-            <p className="text-xs text-muted-foreground mt-3">See your implementation progress at a glance</p>
           </div>
         </div>
       </section>
