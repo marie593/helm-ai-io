@@ -208,6 +208,51 @@ export type Database = {
           },
         ]
       }
+      company_profile: {
+        Row: {
+          avg_onboarding_length: string | null
+          client_types: string | null
+          company_description: string | null
+          created_at: string
+          documentation_links: Json | null
+          id: string
+          industry: string | null
+          onboarding_processes: string | null
+          success_metrics: string | null
+          team_size_structure: string | null
+          tools_tech_stack: string | null
+          updated_at: string
+        }
+        Insert: {
+          avg_onboarding_length?: string | null
+          client_types?: string | null
+          company_description?: string | null
+          created_at?: string
+          documentation_links?: Json | null
+          id?: string
+          industry?: string | null
+          onboarding_processes?: string | null
+          success_metrics?: string | null
+          team_size_structure?: string | null
+          tools_tech_stack?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avg_onboarding_length?: string | null
+          client_types?: string | null
+          company_description?: string | null
+          created_at?: string
+          documentation_links?: Json | null
+          id?: string
+          industry?: string | null
+          onboarding_processes?: string | null
+          success_metrics?: string | null
+          team_size_structure?: string | null
+          tools_tech_stack?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       customer_invitations: {
         Row: {
           created_at: string

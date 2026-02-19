@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { User, Bell, Shield, Palette, Users, Building2, Filter, Plus, Trash2, Edit2, Loader2, X } from 'lucide-react';
+import { CompanyProfile } from '@/components/settings/CompanyProfile';
 import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';
 import { AppLayout } from '@/components/layout/AppLayout';
@@ -462,6 +463,12 @@ export default function Settings() {
               <Palette className="h-4 w-4" />
               Appearance
             </TabsTrigger>
+            {isVendorStaff && (
+              <TabsTrigger value="company" className="gap-2">
+                <Building2 className="h-4 w-4" />
+                Company Profile
+              </TabsTrigger>
+            )}
           </TabsList>
 
           {/* Profile Tab */}
@@ -766,6 +773,13 @@ export default function Settings() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Company Profile Tab */}
+          {isVendorStaff && (
+            <TabsContent value="company">
+              <CompanyProfile />
+            </TabsContent>
+          )}
         </Tabs>
       </div>
 
