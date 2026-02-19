@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Mail, MessageSquare, Send, Loader2, ExternalLink, Plus } from 'lucide-react';
+import { Mail, MessageSquare, Send, Loader2, ExternalLink, Plus, Upload, FileText } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/components/ui/sonner';
@@ -20,6 +21,8 @@ export function ProjectChats({ projectId }: ProjectChatsProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [message, setMessage] = useState('');
+  const [transcriptSource, setTranscriptSource] = useState<string>('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch activity feed as chat thread
   const { data: activities, isLoading: activitiesLoading } = useQuery({
@@ -70,7 +73,7 @@ export function ProjectChats({ projectId }: ProjectChatsProps) {
   return (
     <div className="space-y-6">
       {/* Integration Tiles */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {/* Gmail Tile */}
         <Card className="shadow-card">
           <CardHeader className="pb-3">
@@ -86,12 +89,7 @@ export function ProjectChats({ projectId }: ProjectChatsProps) {
             <CardDescription className="mb-3 text-xs">
               Import emails and parse them for action items
             </CardDescription>
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full"
-              disabled
-            >
+            <Button variant="outline" size="sm" className="w-full" disabled>
               Coming Soon
             </Button>
           </CardContent>
@@ -148,6 +146,79 @@ export function ProjectChats({ projectId }: ProjectChatsProps) {
               <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
               Start Chatting
             </Button>
+          </CardContent>
+        </Card>
+
+        {/* Call Transcripts Tile */}
+        <Card className="shadow-card">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🎙️</span>
+                <CardTitle className="text-base">Call Transcripts</CardTitle>
+              </div>
+              <Badge variant="secondary" className="text-xs">Upload</Badge>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <CardDescription className="mb-3 text-xs">
+              Upload transcripts or sync from a call tool
+            </CardDescription>
+            <div className="space-y-2">
+              <Select value={transcriptSource} onValueChange={(val) => {
+                setTranscriptSource(val);
+                if (val === 'upload') {
+                  fileInputRef.current?.click();
+                } else {
+                  toast.info(`${val} integration coming soon`, {
+                    description: "We'll notify you when this is available.",
+                  });
+                }
+              }}>
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue placeholder="Choose source..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="upload">
+                    <span className="flex items-center gap-1.5">
+                      <Upload className="h-3 w-3" /> Upload File
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="Granola">
+                    <span className="flex items-center gap-1.5">
+                      🥣 Granola
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="Zoom">
+                    <span className="flex items-center gap-1.5">
+                      📹 Zoom
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="Otter.ai">
+                    <span className="flex items-center gap-1.5">
+                      🦦 Otter.ai
+                    </span>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".txt,.pdf,.doc,.docx,.vtt,.srt"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    toast.success(`Uploaded: ${file.name}`, {
+                      description: 'Transcript will appear in the activity thread.',
+                    });
+                    // Reset for re-upload
+                    setTranscriptSource('');
+                    e.target.value = '';
+                  }
+                }}
+              />
+            </div>
           </CardContent>
         </Card>
       </div>
