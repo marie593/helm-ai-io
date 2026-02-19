@@ -14,7 +14,7 @@ export default function Landing() {
             <img src={helmIcon} alt="HelmAI" className="h-9 w-9 rounded-lg object-contain" />
             <span className="text-lg font-bold tracking-tight">HelmAI</span>
           </Link>
-          <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
+          <nav className="flex items-center gap-8 text-sm text-muted-foreground">
             <Link to="/product" className="hover:text-foreground transition-colors">Product</Link>
             <Link to="/about" className="hover:text-foreground transition-colors">About Us</Link>
           </nav>
