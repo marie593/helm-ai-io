@@ -439,12 +439,14 @@ export default function Settings() {
   return (
     <AppLayout title="Settings" description="Manage your account and preferences">
       <div className="space-y-6 animate-fade-in">
-        <Tabs defaultValue="profile" className="space-y-6">
+        <Tabs defaultValue={isVendorAdmin ? (isVendorStaff ? 'users' : 'company') : 'profile'} className="space-y-6">
           <TabsList className="flex-wrap">
-            <TabsTrigger value="profile" className="gap-2">
-              <User className="h-4 w-4" />
-              Profile
-            </TabsTrigger>
+            {!isVendorAdmin && (
+              <TabsTrigger value="profile" className="gap-2">
+                <User className="h-4 w-4" />
+                Profile
+              </TabsTrigger>
+            )}
             {isVendorStaff && (
               <TabsTrigger value="users" className="gap-2">
                 <Users className="h-4 w-4" />
@@ -471,28 +473,30 @@ export default function Settings() {
             )}
           </TabsList>
 
-          {/* Profile Tab */}
-          <TabsContent value="profile">
-            <Card className="shadow-card">
-              <CardHeader>
-                <CardTitle>Profile Information</CardTitle>
-                <CardDescription>Update your personal information and contact details</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="fullName">Full Name</Label>
-                    <Input id="fullName" defaultValue={profile?.full_name || ''} placeholder="Enter your name" />
+          {/* Profile Tab (non-admin only) */}
+          {!isVendorAdmin && (
+            <TabsContent value="profile">
+              <Card className="shadow-card">
+                <CardHeader>
+                  <CardTitle>Profile Information</CardTitle>
+                  <CardDescription>Update your personal information and contact details</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="fullName">Full Name</Label>
+                      <Input id="fullName" defaultValue={profile?.full_name || ''} placeholder="Enter your name" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input id="email" type="email" defaultValue={profile?.email || ''} disabled />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" defaultValue={profile?.email || ''} disabled />
-                  </div>
-                </div>
-                <Button onClick={handleSaveProfile}>Save Changes</Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                  <Button onClick={handleSaveProfile}>Save Changes</Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
 
           {/* Users & Groups Tab */}
           {isVendorStaff && (
