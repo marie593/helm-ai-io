@@ -1,14 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
-import { format } from 'date-fns';
+import { format, differenceInDays } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+} from '@/components/ui/table';
 import { 
   TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, Sparkles,
-  Bug, Lightbulb, MessageSquare, BarChart3, Users, FolderKanban
+  Bug, Lightbulb, MessageSquare, BarChart3, Users, FolderKanban, Clock
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -311,6 +314,95 @@ export default function Insights() {
                 <p>No high priority items</p>
                 <p className="text-sm">All feedback is under control</p>
               </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Time-to-Value */}
+        <Card className="shadow-card">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Clock className="h-5 w-5 text-primary" />
+              Time-to-Value
+            </CardTitle>
+            <CardDescription>
+              Onboarding duration per project — from start to completion or current day
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {!projects || projects.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <Clock className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                <p>No project data yet</p>
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Project</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Start Date</TableHead>
+                    <TableHead>Target End</TableHead>
+                    <TableHead className="text-right">Days Elapsed</TableHead>
+                    <TableHead className="text-right">Target (days)</TableHead>
+                    <TableHead>Progress</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {projects
+                    .slice()
+                    .sort((a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime())
+                    .map((project) => {
+                      const start = new Date(project.start_date);
+                      const targetEnd = new Date(project.target_end_date);
+                      const now = new Date();
+                      const endRef = project.status === 'completed' ? targetEnd : now;
+                      const elapsed = differenceInDays(endRef, start);
+                      const targetDays = differenceInDays(targetEnd, start);
+                      const pct = targetDays > 0 ? Math.min(Math.round((elapsed / targetDays) * 100), 100) : 0;
+                      const overdue = elapsed > targetDays && project.status !== 'completed';
+
+                      return (
+                        <TableRow key={project.id}>
+                          <TableCell className="font-medium">{project.name}</TableCell>
+                          <TableCell>
+                            <Badge
+                              variant="outline"
+                              className={cn(
+                                'text-xs capitalize',
+                                project.status === 'completed' && 'border-success text-success',
+                                project.status === 'at_risk' && 'border-destructive text-destructive',
+                                project.status === 'in_progress' && 'border-primary text-primary',
+                              )}
+                            >
+                              {project.status.replace('_', ' ')}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {format(start, 'MMM d, yyyy')}
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {format(targetEnd, 'MMM d, yyyy')}
+                          </TableCell>
+                          <TableCell className="text-right font-medium">
+                            <span className={overdue ? 'text-destructive' : ''}>
+                              {elapsed}d
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-right text-muted-foreground">{targetDays}d</TableCell>
+                          <TableCell className="w-[140px]">
+                            <div className="flex items-center gap-2">
+                              <Progress value={pct} className={cn('h-2 flex-1', overdue && '[&>div]:bg-destructive')} />
+                              <span className={cn('text-xs font-medium w-10 text-right', overdue ? 'text-destructive' : 'text-muted-foreground')}>
+                                {pct}%
+                              </span>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              </Table>
             )}
           </CardContent>
         </Card>
