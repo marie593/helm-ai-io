@@ -108,7 +108,7 @@ export default function Insights() {
 
   return (
     <AppLayout
-      title="Product Insights"
+      title="Insights"
       description="Cross-customer feedback analysis and trends"
     >
       <div className="space-y-6 animate-fade-in">
