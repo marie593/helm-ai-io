@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { format, differenceInDays } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { AppLayout } from '@/components/layout/AppLayout';
@@ -14,8 +15,11 @@ import {
   Bug, Lightbulb, MessageSquare, BarChart3, Users, FolderKanban, Clock
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function Insights() {
+  const navigate = useNavigate();
   // Fetch all feedback items across projects
   const { data: allFeedback, isLoading: feedbackLoading } = useQuery({
     queryKey: ['all-feedback'],
@@ -149,74 +153,63 @@ export default function Insights() {
 
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Top Themes */}
-          <Card className="shadow-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-primary" />
-                Top Feedback Themes
-              </CardTitle>
+          <Card className="shadow-card cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/insights/themes')}>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  Top Feedback Themes
+                </CardTitle>
+                <Button variant="ghost" size="sm" className="gap-1 text-xs text-muted-foreground">
+                  View All <ArrowRight className="h-3.5 w-3.5" />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               {feedbackLoading ? (
-                <div className="space-y-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Skeleton key={i} className="h-12" />
+                <div className="space-y-2">
+                  {[...Array(3)].map((_, i) => (
+                    <Skeleton key={i} className="h-8" />
                   ))}
                 </div>
               ) : sortedThemes.length > 0 ? (
-                <div className="space-y-4">
-                  {sortedThemes.map((theme, index) => (
-                    <div key={theme.theme} className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-medium text-muted-foreground w-6">
-                            #{index + 1}
-                          </span>
-                          <span className="font-medium text-foreground capitalize">
-                            {theme.theme}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="secondary" className="text-xs">
-                            {theme.count} mentions
-                          </Badge>
-                          <Badge variant="outline" className="text-xs">
-                            <Users className="h-3 w-3 mr-1" />
-                            {theme.projectCount} projects
-                          </Badge>
-                        </div>
+                <div className="space-y-2">
+                  {sortedThemes.slice(0, 5).map((theme, index) => (
+                    <div key={theme.theme} className="flex items-center justify-between py-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-medium text-muted-foreground w-5">#{index + 1}</span>
+                        <span className="text-sm font-medium text-foreground capitalize">{theme.theme}</span>
                       </div>
-                      <Progress 
-                        value={(theme.count / (sortedThemes[0]?.count || 1)) * 100} 
-                        className="h-2"
-                      />
-                      <div className="flex gap-1">
-                        {Object.entries(theme.types).map(([type, count]) => (
-                          <Badge key={type} variant="outline" className="text-xs">
-                            {type.replace('_', ' ')}: {count as number}
-                          </Badge>
-                        ))}
+                      <div className="flex items-center gap-1.5">
+                        <Badge variant="secondary" className="text-xs">{theme.count}</Badge>
+                        <Badge variant="outline" className="text-xs">
+                          <Users className="h-3 w-3 mr-0.5" />{theme.projectCount}
+                        </Badge>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <MessageSquare className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                  <p>No feedback data yet</p>
-                  <p className="text-sm">Add feedback to projects to see insights</p>
+                <div className="text-center py-6 text-muted-foreground">
+                  <MessageSquare className="h-8 w-8 mx-auto mb-1 opacity-50" />
+                  <p className="text-sm">No feedback data yet</p>
                 </div>
               )}
             </CardContent>
           </Card>
 
           {/* Type Breakdown */}
-          <Card className="shadow-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-primary" />
-                Feedback by Type
-              </CardTitle>
+          <Card className="shadow-card cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/insights/types')}>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5 text-primary" />
+                  Feedback by Type
+                </CardTitle>
+                <Button variant="ghost" size="sm" className="gap-1 text-xs text-muted-foreground">
+                  View All <ArrowRight className="h-3.5 w-3.5" />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               {feedbackLoading ? (
@@ -258,12 +251,17 @@ export default function Insights() {
         </div>
 
         {/* Critical Feedback */}
-        <Card className="shadow-card">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-warning" />
-              High Priority Items
-            </CardTitle>
+        <Card className="shadow-card cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/insights/priority')}>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-warning" />
+                High Priority Items
+              </CardTitle>
+              <Button variant="ghost" size="sm" className="gap-1 text-xs text-muted-foreground">
+                View All <ArrowRight className="h-3.5 w-3.5" />
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             {feedbackLoading ? (
@@ -319,12 +317,17 @@ export default function Insights() {
         </Card>
 
         {/* Time-to-Value */}
-        <Card className="shadow-card">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5 text-primary" />
-              Time-to-Value
-            </CardTitle>
+        <Card className="shadow-card cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/insights/time-to-value')}>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="h-5 w-5 text-primary" />
+                Time-to-Value
+              </CardTitle>
+              <Button variant="ghost" size="sm" className="gap-1 text-xs text-muted-foreground">
+                View All <ArrowRight className="h-3.5 w-3.5" />
+              </Button>
+            </div>
             <CardDescription>
               Onboarding duration per project — from start to completion or current day
             </CardDescription>

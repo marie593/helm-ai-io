@@ -16,6 +16,7 @@ import Projects from "./pages/Projects";
 import ProjectDetail from "./pages/ProjectDetail";
 import Calendar from "./pages/Calendar";
 import Insights from "./pages/Insights";
+import InsightDetail from "./pages/InsightDetail";
 import Integrations from "./pages/Integrations";
 import Settings from "./pages/Settings";
 import CustomerNew from "./pages/CustomerNew";
@@ -111,6 +112,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Insights />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/insights/:section"
+              element={
+                <ProtectedRoute>
+                  <InsightDetail />
                 </ProtectedRoute>
               }
             />
