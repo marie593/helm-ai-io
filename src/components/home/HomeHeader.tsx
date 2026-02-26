@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Search, ChevronDown, Check, Building2 } from 'lucide-react';
+import { ChevronDown, Check, Building2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { Input } from '@/components/ui/input';
+
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command';
@@ -91,14 +91,6 @@ export function HomeHeader({ selectedCustomer, onSelectCustomer }: {
             </Command>
           </PopoverContent>
         </Popover>
-      </div>
-      <div className="relative w-72">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          type="search"
-          placeholder="Search anything…"
-          className="pl-9 h-9 bg-secondary/50 border-transparent focus-visible:border-border"
-        />
       </div>
     </header>
   );
