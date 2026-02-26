@@ -19,7 +19,7 @@ export default function Home() {
         <HomeHeader selectedCustomer={selectedCustomer} onSelectCustomer={setSelectedCustomer} />
         <div className="flex-1 flex overflow-hidden">
           <div className="flex-1 flex flex-col min-w-0">
-            <ChatPane />
+            <ChatPane customerId={selectedCustomer?.id} />
           </div>
           <aside className="hidden lg:block w-80 border-l border-border bg-card/40">
             <RightRail />

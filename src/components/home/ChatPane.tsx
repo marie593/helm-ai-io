@@ -7,6 +7,8 @@ import { cn } from '@/lib/utils';
 import { ChatMessage, MOCK_MESSAGES } from '@/types/home';
 import { format } from 'date-fns';
 import ReactMarkdown from 'react-markdown';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 
 const QUICK_ACTIONS = [
   { label: 'Summarize call', icon: FileText },
@@ -15,8 +17,14 @@ const QUICK_ACTIONS = [
   { label: 'Flag risk', icon: AlertTriangle },
 ];
 
-export function ChatPane() {
-  const [messages, setMessages] = useState<ChatMessage[]>(MOCK_MESSAGES);
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+
+interface ChatPaneProps {
+  customerId?: string | null;
+}
+
+export function ChatPane({ customerId }: ChatPaneProps) {
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -25,45 +33,158 @@ export function ChatPane() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const sendMessage = () => {
+  const streamChat = async (allMessages: { role: string; content: string }[]) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) {
+      toast({ title: 'Not authenticated', description: 'Please log in to use chat.', variant: 'destructive' });
+      return;
+    }
+
+    const resp = await fetch(CHAT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({
+        messages: allMessages.map((m) => ({ role: m.role, content: m.content })),
+        customerId: customerId || 'all',
+      }),
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({ error: 'Unknown error' }));
+      if (resp.status === 429) {
+        toast({ title: 'Rate limited', description: err.error, variant: 'destructive' });
+      } else if (resp.status === 402) {
+        toast({ title: 'Credits exhausted', description: err.error, variant: 'destructive' });
+      } else {
+        toast({ title: 'Chat error', description: err.error || 'Something went wrong', variant: 'destructive' });
+      }
+      throw new Error(err.error);
+    }
+
+    if (!resp.body) throw new Error('No response body');
+    return resp.body;
+  };
+
+  const sendMessage = async () => {
     if (!input.trim() || isStreaming) return;
+
     const userMsg: ChatMessage = {
       id: crypto.randomUUID(),
       role: 'user',
       content: input.trim(),
       timestamp: new Date().toISOString(),
     };
-    setMessages((prev) => [...prev, userMsg]);
-    setInput('');
 
-    // Simulate streaming response
-    setIsStreaming(true);
+    const assistantMsgId = crypto.randomUUID();
     const assistantMsg: ChatMessage = {
-      id: crypto.randomUUID(),
+      id: assistantMsgId,
       role: 'assistant',
       content: '',
       timestamp: new Date().toISOString(),
       isStreaming: true,
     };
-    setMessages((prev) => [...prev, assistantMsg]);
 
-    const fullResponse = "Got it — I'll look into that for you. Give me a moment to pull the latest data and draft a summary.";
-    let idx = 0;
-    const interval = setInterval(() => {
-      idx += 3;
-      if (idx >= fullResponse.length) {
-        idx = fullResponse.length;
-        clearInterval(interval);
-        setIsStreaming(false);
+    setMessages((prev) => [...prev, userMsg, assistantMsg]);
+    setInput('');
+    setIsStreaming(true);
+
+    // Build conversation history (exclude streaming markers)
+    const history = [...messages, userMsg]
+      .filter((m) => m.role === 'user' || m.role === 'assistant')
+      .map((m) => ({ role: m.role, content: m.content }));
+
+    try {
+      const body = await streamChat(history);
+      if (!body) { setIsStreaming(false); return; }
+
+      const reader = body.getReader();
+      const decoder = new TextDecoder();
+      let textBuffer = '';
+      let assistantSoFar = '';
+      let streamDone = false;
+
+      while (!streamDone) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        textBuffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = textBuffer.indexOf('\n')) !== -1) {
+          let line = textBuffer.slice(0, newlineIndex);
+          textBuffer = textBuffer.slice(newlineIndex + 1);
+
+          if (line.endsWith('\r')) line = line.slice(0, -1);
+          if (line.startsWith(':') || line.trim() === '') continue;
+          if (!line.startsWith('data: ')) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === '[DONE]') { streamDone = true; break; }
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) {
+              assistantSoFar += content;
+              const snapshot = assistantSoFar;
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === assistantMsgId ? { ...m, content: snapshot } : m
+                )
+              );
+            }
+          } catch {
+            textBuffer = line + '\n' + textBuffer;
+            break;
+          }
+        }
       }
+
+      // Final flush
+      if (textBuffer.trim()) {
+        for (let raw of textBuffer.split('\n')) {
+          if (!raw) continue;
+          if (raw.endsWith('\r')) raw = raw.slice(0, -1);
+          if (raw.startsWith(':') || raw.trim() === '') continue;
+          if (!raw.startsWith('data: ')) continue;
+          const jsonStr = raw.slice(6).trim();
+          if (jsonStr === '[DONE]') continue;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) {
+              assistantSoFar += content;
+              const snapshot = assistantSoFar;
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === assistantMsgId ? { ...m, content: snapshot } : m
+                )
+              );
+            }
+          } catch { /* ignore */ }
+        }
+      }
+
+      // Mark streaming done
       setMessages((prev) =>
         prev.map((m) =>
-          m.id === assistantMsg.id
-            ? { ...m, content: fullResponse.slice(0, idx), isStreaming: idx < fullResponse.length }
+          m.id === assistantMsgId ? { ...m, isStreaming: false } : m
+        )
+      );
+    } catch (e) {
+      console.error('Chat stream error:', e);
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === assistantMsgId
+            ? { ...m, content: 'Sorry, something went wrong. Please try again.', isStreaming: false }
             : m
         )
       );
-    }, 30);
+    } finally {
+      setIsStreaming(false);
+    }
   };
 
   const handleQuickAction = (label: string) => {
