@@ -10,7 +10,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "./pages/Index";
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
-import Dashboard from "./pages/Dashboard";
+import Home from "./pages/Home";
 import Customers from "./pages/Customers";
 import Projects from "./pages/Projects";
 import ProjectDetail from "./pages/ProjectDetail";
@@ -25,7 +25,6 @@ import ProjectNew from "./pages/ProjectNew";
 import NotFound from "./pages/NotFound";
 import Product from "./pages/Product";
 import About from "./pages/About";
-import Home from "./pages/Home";
 import WaitlistForm from "./components/auth/WaitlistForm";
 
 const queryClient = new QueryClient();
@@ -42,13 +41,13 @@ const App = () => (
             <Route path="/product" element={<Product />} />
             <Route path="/about" element={<About />} />
             <Route path="/waitlist" element={<WaitlistForm />} />
-            <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+            
             <Route path="/auth" element={<Auth />} />
             <Route
               path="/dashboard"
               element={
                 <ProtectedRoute>
-                  <Dashboard />
+                  <Home />
                 </ProtectedRoute>
               }
             />
