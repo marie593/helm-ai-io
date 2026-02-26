@@ -25,6 +25,7 @@ import ProjectNew from "./pages/ProjectNew";
 import NotFound from "./pages/NotFound";
 import Product from "./pages/Product";
 import About from "./pages/About";
+import Home from "./pages/Home";
 import WaitlistForm from "./components/auth/WaitlistForm";
 
 const queryClient = new QueryClient();
@@ -41,7 +42,7 @@ const App = () => (
             <Route path="/product" element={<Product />} />
             <Route path="/about" element={<About />} />
             <Route path="/waitlist" element={<WaitlistForm />} />
-            <Route path="/home" element={<Index />} />
+            <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
             <Route path="/auth" element={<Auth />} />
             <Route
               path="/dashboard"
