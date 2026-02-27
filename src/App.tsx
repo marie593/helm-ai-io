@@ -25,6 +25,7 @@ import ProjectNew from "./pages/ProjectNew";
 import NotFound from "./pages/NotFound";
 import Product from "./pages/Product";
 import About from "./pages/About";
+import ResetPassword from "./pages/ResetPassword";
 import WaitlistForm from "./components/auth/WaitlistForm";
 
 const queryClient = new QueryClient();
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/waitlist" element={<WaitlistForm />} />
             
             <Route path="/auth" element={<Auth />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route
               path="/dashboard"
               element={

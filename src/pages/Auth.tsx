@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { SignupForm } from '@/components/auth/SignupForm';
 import { DemoRequestForm } from '@/components/auth/DemoRequestForm';
+import { ForgotPasswordForm } from '@/components/auth/ForgotPasswordForm';
 import { Card, CardContent } from '@/components/ui/card';
 import { lovable } from '@/integrations/lovable/index';
 import { Button } from '@/components/ui/button';
@@ -16,7 +17,7 @@ export default function AuthPage() {
   const inviteEmail = searchParams.get('email');
 
   // Only show signup if there's an invite token
-  const [mode, setMode] = useState<'login' | 'signup' | 'demo'>(
+  const [mode, setMode] = useState<'login' | 'signup' | 'demo' | 'forgot'>(
     inviteToken ? 'signup' : 'login'
   );
   const { user } = useAuth();
@@ -97,15 +98,28 @@ export default function AuthPage() {
               {mode === 'login' && 'Welcome back'}
               {mode === 'signup' && 'Create your account'}
               {mode === 'demo' && 'Request a Demo'}
+              {mode === 'forgot' && 'Reset your password'}
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
               {mode === 'login' && 'Sign in to manage your implementations'}
               {mode === 'signup' && 'Start managing your SaaS implementations'}
               {mode === 'demo' && 'Fill out the form below and we\'ll reach out to schedule a demo'}
+              {mode === 'forgot' && 'Enter your email and we\'ll send you a reset link'}
             </p>
           </div>
 
           {mode === 'login' && <LoginForm />}
+          {mode === 'login' && (
+            <button
+              type="button"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors w-full text-right -mt-2"
+              onClick={() => setMode('forgot')}
+            >
+              Forgot password?
+            </button>
+          )}
+
+          {mode === 'forgot' && <ForgotPasswordForm onBack={() => setMode('login')} />}
 
           {mode === 'login' && (
             <>
