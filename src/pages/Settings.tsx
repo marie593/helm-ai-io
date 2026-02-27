@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { User, Bell, Shield, Palette, Users, Building2, Filter, Plus, Trash2, Edit2, Loader2, X } from 'lucide-react';
+import { User, Bell, Shield, Palette, Users, Building2, Filter, Plus, Trash2, Edit2, Loader2, X, KeyRound } from 'lucide-react';
 import { CompanyProfile } from '@/components/settings/CompanyProfile';
 import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';
@@ -291,6 +291,33 @@ export default function Settings() {
     },
     onError: (error: Error) => {
       toast.error('Failed to update user', { description: error.message });
+    },
+  });
+
+  // Reset password mutation
+  const resetPassword = useMutation({
+    mutationFn: async (email: string) => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-reset-password`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session?.access_token}`,
+          },
+          body: JSON.stringify({ email }),
+        }
+      );
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Failed to send reset email');
+      return result;
+    },
+    onSuccess: () => {
+      toast.success('Password reset email sent successfully');
+    },
+    onError: (error: Error) => {
+      toast.error('Failed to send reset email', { description: error.message });
     },
   });
 
@@ -614,6 +641,13 @@ export default function Settings() {
                                     <DropdownMenuItem onClick={() => openEditDialog(user)}>
                                       <Edit2 className="h-4 w-4 mr-2" />
                                       Edit User
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem 
+                                      onClick={() => resetPassword.mutate(user.email)}
+                                      disabled={resetPassword.isPending}
+                                    >
+                                      <KeyRound className="h-4 w-4 mr-2" />
+                                      Reset Password
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem 
@@ -971,6 +1005,20 @@ export default function Settings() {
                   </div>
                 ))}
               </div>
+           </div>
+            <Separator />
+            <div className="space-y-2">
+              <Label>Password</Label>
+              <p className="text-sm text-muted-foreground">Send a password reset email to this user</p>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => selectedUser && resetPassword.mutate(selectedUser.email)}
+                disabled={resetPassword.isPending}
+              >
+                <KeyRound className="h-4 w-4 mr-2" />
+                {resetPassword.isPending ? 'Sending...' : 'Send Reset Email'}
+              </Button>
             </div>
           </div>
           <DialogFooter>
