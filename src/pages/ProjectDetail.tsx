@@ -1,9 +1,10 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Calendar, Map, MessageSquare, Settings, MessageCircle, Lightbulb } from 'lucide-react';
+import { ArrowLeft, Calendar, Map, MessageSquare, Settings, MessageCircle, Lightbulb, Star } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { HealthScore } from '@/components/ui/health-score';
@@ -83,6 +84,26 @@ export default function ProjectDetail() {
             Back to Projects
           </Link>
         </Button>
+
+        {project.customers?.goals && (
+          <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-transparent shadow-card">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-3">
+                <div className="rounded-full bg-primary/10 p-2.5 mt-0.5">
+                  <Star className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-primary uppercase tracking-wider mb-1">
+                    North Star
+                  </h3>
+                  <p className="text-foreground leading-relaxed">
+                    {project.customers.goals}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <Tabs defaultValue="roadmap" className="w-full">
           <TabsList className="grid w-full max-w-2xl grid-cols-5">
