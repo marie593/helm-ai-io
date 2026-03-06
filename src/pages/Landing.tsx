@@ -2,8 +2,6 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Rocket, BarChart3, Users, Calendar, MessageSquare, Shield } from 'lucide-react';
 import helmIcon from '@/assets/helm-icon.png';
 import dashboardPreview from '@/assets/dashboard-preview.png';
-import projectPreview from '@/assets/project-preview.png';
-import insightsPreview from '@/assets/insights-preview.png';
 import { Button } from '@/components/ui/button';
 
 export default function Landing() {
@@ -92,25 +90,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Customer Project Preview */}
-      <section className="border-t border-border bg-secondary/30 px-6 py-16">
-        <div className="max-w-5xl mx-auto text-center space-y-8">
-          <p className="text-lg md:text-xl font-bold text-primary">Track every customer project from kickoff to go-live</p>
-          <div className="rounded-2xl border border-border bg-card shadow-2xl overflow-hidden">
-            <img src={projectPreview} alt="HelmAI Customer Project - Milestone timeline, task list, calendar, and team collaboration" className="w-full h-auto rounded-2xl" />
-          </div>
-        </div>
-      </section>
-
-      {/* Insights Preview */}
-      <section className="border-t border-border px-6 py-16">
-        <div className="max-w-5xl mx-auto text-center space-y-8">
-          <p className="text-lg md:text-xl font-bold text-primary">Turn feedback into actionable product insights</p>
-          <div className="rounded-2xl border border-border bg-card shadow-2xl overflow-hidden">
-            <img src={insightsPreview} alt="HelmAI Product Insights - Sentiment analysis, feedback themes, and trend tracking" className="w-full h-auto rounded-2xl" />
-          </div>
-        </div>
-      </section>
 
       {/* CTA */}
       <section className="px-6 py-20 text-center">
