@@ -34,7 +34,7 @@ export default function Landing() {
             <span>The CS Intelligence Layer</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight">
-            Every signal. Every team.{' '}
+            <span>Every signal. Every team.</span>
             <br />
             <span className="text-primary">Nothing lost in between.</span>
           </h1>
