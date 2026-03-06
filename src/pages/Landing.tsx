@@ -94,8 +94,8 @@ export default function Landing() {
       {/* CTA */}
       <section className="px-6 py-20 text-center">
         <div className="max-w-2xl mx-auto space-y-6">
-          <h2 className="text-3xl font-bold tracking-tight">Ready to streamline your implementations?</h2>
-          <p className="text-muted-foreground">Join the waitlist and be the first to experience HelmAI.</p>
+          <h2 className="text-3xl font-bold tracking-tight">Your next renewal is already in your calls.</h2>
+          <p className="text-muted-foreground">Join the CS teams who refuse to let customers slip through the cracks.</p>
           <Button asChild size="lg" className="gap-2">
             <Link to="/waitlist">
               Join Our Waitlist <ArrowRight className="h-4 w-4" />
