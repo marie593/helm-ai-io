@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Rocket } from 'lucide-react';
+import { ArrowRight, Rocket, BarChart3, Users, Calendar, MessageSquare, Shield } from 'lucide-react';
 import helmIcon from '@/assets/helm-icon.png';
-import helmLogo from '@/assets/helm-logo.png';
+import dashboardPreview from '@/assets/dashboard-preview.png';
+import projectPreview from '@/assets/project-preview.png';
+import insightsPreview from '@/assets/insights-preview.png';
 import { Button } from '@/components/ui/button';
 
 export default function Landing() {
@@ -15,7 +17,7 @@ export default function Landing() {
             <span className="text-lg font-bold tracking-tight">HelmAI</span>
           </Link>
           <nav className="flex items-center gap-8 text-sm text-muted-foreground">
-            <Link to="/product" className="hover:text-foreground transition-colors">Product</Link>
+            <a href="#features" className="hover:text-foreground transition-colors">Product</a>
             <Link to="/about" className="hover:text-foreground transition-colors">About Us</Link>
           </nav>
           <Button asChild size="sm">
@@ -45,9 +47,80 @@ export default function Landing() {
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <Link to="/product">Learn More</Link>
+              <a href="#features">Learn More</a>
             </Button>
           </div>
+        </div>
+      </section>
+
+      {/* Feature Tiles */}
+      <section id="features" className="bg-secondary/30 px-6 py-20">
+        <div className="max-w-5xl mx-auto space-y-12">
+          <div className="text-center space-y-3">
+            <h2 className="text-3xl font-bold tracking-tight">Everything you need to manage implementations</h2>
+            <p className="text-muted-foreground max-w-xl mx-auto">From kickoff to go-live, HelmAI keeps your team and customers aligned at every milestone.</p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { icon: BarChart3, title: 'Smart Roadmaps', desc: 'AI-generated project plans tailored to each customer\'s needs.' },
+              { icon: Users, title: 'Collaboration Hub', desc: 'Shared workspace for vendor teams and customer stakeholders.' },
+              { icon: Calendar, title: 'Calendar & Scheduling', desc: 'Built-in booking and calendar sync to keep meetings on track.' },
+              { icon: MessageSquare, title: 'Feedback Tracking', desc: 'Capture, categorize, and act on customer feedback in real time.' },
+              { icon: Shield, title: 'Health Scoring', desc: 'Proactive risk detection with AI-powered health scores.' },
+              { icon: Rocket, title: 'Insights & Digests', desc: 'Automated weekly digests and cross-project product insights.' },
+            ].map(({ icon: Icon, title, desc }) => (
+              <div key={title} className="rounded-xl border border-border bg-card p-6 space-y-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                  <Icon className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="font-semibold">{title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Dashboard Preview */}
+      <section className="border-t border-border px-6 py-16">
+        <div className="max-w-5xl mx-auto text-center space-y-8">
+          <p className="text-lg md:text-xl font-bold text-primary">See your implementation progress at a glance</p>
+          <div className="rounded-2xl border border-border bg-card shadow-2xl overflow-hidden">
+            <img src={dashboardPreview} alt="HelmAI Dashboard - Project overview with health scores, roadmap milestones, and activity feed" className="w-full h-auto rounded-2xl" />
+          </div>
+        </div>
+      </section>
+
+      {/* Customer Project Preview */}
+      <section className="border-t border-border bg-secondary/30 px-6 py-16">
+        <div className="max-w-5xl mx-auto text-center space-y-8">
+          <p className="text-lg md:text-xl font-bold text-primary">Track every customer project from kickoff to go-live</p>
+          <div className="rounded-2xl border border-border bg-card shadow-2xl overflow-hidden">
+            <img src={projectPreview} alt="HelmAI Customer Project - Milestone timeline, task list, calendar, and team collaboration" className="w-full h-auto rounded-2xl" />
+          </div>
+        </div>
+      </section>
+
+      {/* Insights Preview */}
+      <section className="border-t border-border px-6 py-16">
+        <div className="max-w-5xl mx-auto text-center space-y-8">
+          <p className="text-lg md:text-xl font-bold text-primary">Turn feedback into actionable product insights</p>
+          <div className="rounded-2xl border border-border bg-card shadow-2xl overflow-hidden">
+            <img src={insightsPreview} alt="HelmAI Product Insights - Sentiment analysis, feedback themes, and trend tracking" className="w-full h-auto rounded-2xl" />
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="px-6 py-20 text-center">
+        <div className="max-w-2xl mx-auto space-y-6">
+          <h2 className="text-3xl font-bold tracking-tight">Ready to streamline your implementations?</h2>
+          <p className="text-muted-foreground">Join the waitlist and be the first to experience HelmAI.</p>
+          <Button asChild size="lg" className="gap-2">
+            <Link to="/waitlist">
+              Join Our Waitlist <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
         </div>
       </section>
 
@@ -72,6 +145,6 @@ export default function Landing() {
           </p>
         </div>
       </footer>
-    </div>);
-
+    </div>
+  );
 }
