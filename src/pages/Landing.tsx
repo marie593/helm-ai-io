@@ -58,7 +58,7 @@ export default function Landing() {
       <section id="features" className="bg-secondary/30 px-6 py-20">
         <div className="max-w-5xl mx-auto space-y-12">
           <div className="text-center space-y-3">
-            <h2 className="text-3xl font-bold tracking-tight">Everything you need to manage implementations</h2>
+            <h2 className="text-3xl font-bold tracking-tight">From conversation to action — automatically.</h2>
             <p className="text-muted-foreground max-w-xl mx-auto">From conversation to action —automatically.</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
