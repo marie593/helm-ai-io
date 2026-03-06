@@ -83,7 +83,7 @@ export default function Landing() {
       {/* Dashboard Preview */}
       <section className="border-t border-border px-6 py-16">
         <div className="max-w-5xl mx-auto text-center space-y-8">
-          <p className="text-lg md:text-xl font-bold text-primary">See your implementation progress at a glance</p>
+          <p className="text-lg md:text-xl font-bold text-primary">Your implementation co-pilot — always on, always ahead.</p>
           <div className="rounded-2xl border border-border bg-card shadow-2xl overflow-hidden">
             <img src={dashboardPreview} alt="HelmAI Dashboard - Project overview with health scores, roadmap milestones, and activity feed" className="w-full h-auto rounded-2xl" />
           </div>
