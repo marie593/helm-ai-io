@@ -59,7 +59,7 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto space-y-12">
           <div className="text-center space-y-3">
             <h2 className="text-3xl font-bold tracking-tight">From conversation to action — automatically.</h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">From conversation to action —automatically.</p>
+            <p className="text-muted-foreground max-w-xl mx-auto">Every customer call is a signal. Helm makes sure it lands.</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
