@@ -62,12 +62,12 @@ export default function Landing() {
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-            { icon: BarChart3, title: 'Smart Roadmaps', desc: 'AI-generated project plans tailored to each customer\'s needs.' },
-            { icon: Users, title: 'Collaboration Hub', desc: 'Shared workspace for vendor teams and customer stakeholders.' },
-            { icon: Calendar, title: 'Calendar & Scheduling', desc: 'Built-in booking and calendar sync to keep meetings on track.' },
-            { icon: MessageSquare, title: 'Feedback Tracking', desc: 'Capture, categorize, and act on customer feedback in real time.' },
-            { icon: Shield, title: 'Health Scoring', desc: 'Proactive risk detection with AI-powered health scores.' },
-            { icon: Rocket, title: 'Insights & Digests', desc: 'Automated weekly digests and cross-project product insights.' }].
+            { icon: BarChart3, title: 'Smart Roadmaps', desc: 'AI-generated roadmaps that update in real time as customer conversations evolve. No manual updates.' },
+            { icon: Users, title: 'Customer Personas', desc: 'Clean transfer of context from sales to implementation. No dropped promises, no repeated discovery.' },
+            { icon: Calendar, title: 'Calendar & Scheduling', desc: 'Meetings auto-scheduled and synced based on project milestones and customer signals.' },
+            { icon: MessageSquare, title: 'Signal Routing', desc: 'Bugs go to engineering. Product feedback goes to roadmap. Upsells go to sales. Automatically.' },
+            { icon: Shield, title: 'Health Scoring', desc: 'AI-powered risk detection that flags churn signals before they become problems.' },
+            { icon: Rocket, title: 'Cross-Team Intelligence', desc: 'Weekly digests that give product, GTM, and leadership a clear view of what customers are saying.' }].
             map(({ icon: Icon, title, desc }) =>
             <div key={title} className="rounded-xl border border-border bg-card p-6 space-y-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
