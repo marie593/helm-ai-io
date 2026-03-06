@@ -34,8 +34,9 @@ export default function Landing() {
             <span>The CS Intelligence Layer</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight">
-            AI-Powered Execution{' '}
-            <span className="text-primary">for SaaS</span>
+            <span>Every signal. Every team.</span>
+            <br />
+            <span className="text-primary">Nothing lost in between.</span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">HelmAI turns customer conversations into strategic intelligence —automatically surfacing insights for product, engineering, and sales so you can proactively win the renewal. 
 
