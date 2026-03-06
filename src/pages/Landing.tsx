@@ -31,14 +31,14 @@ export default function Landing() {
         <div className="max-w-3xl text-center space-y-6">
           <div className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/50 px-4 py-1.5 text-xs font-medium text-muted-foreground">
             <Rocket className="h-3.5 w-3.5" />
-            <span>AI-Powered Implementation Intelligence</span>
+            <span>The CS Intelligence Layer</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight">
             AI-Powered Execution{' '}
             <span className="text-primary">for SaaS</span>
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            The first 90 days determine retention. Helm makes customer delivery intelligent — aligning teams, surfacing risk early, and turning launches into long-term revenue.
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">HelmAI turns customer conversations into strategic intelligence —automatically surfacing insights for product, engineering, and sales so you can proactively win the renewal. 
+
           </p>
           <div className="flex items-center justify-center gap-4 pt-4">
             <Button asChild size="lg" className="gap-2">
@@ -62,21 +62,21 @@ export default function Landing() {
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { icon: BarChart3, title: 'Smart Roadmaps', desc: 'AI-generated project plans tailored to each customer\'s needs.' },
-              { icon: Users, title: 'Collaboration Hub', desc: 'Shared workspace for vendor teams and customer stakeholders.' },
-              { icon: Calendar, title: 'Calendar & Scheduling', desc: 'Built-in booking and calendar sync to keep meetings on track.' },
-              { icon: MessageSquare, title: 'Feedback Tracking', desc: 'Capture, categorize, and act on customer feedback in real time.' },
-              { icon: Shield, title: 'Health Scoring', desc: 'Proactive risk detection with AI-powered health scores.' },
-              { icon: Rocket, title: 'Insights & Digests', desc: 'Automated weekly digests and cross-project product insights.' },
-            ].map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="rounded-xl border border-border bg-card p-6 space-y-3">
+            { icon: BarChart3, title: 'Smart Roadmaps', desc: 'AI-generated project plans tailored to each customer\'s needs.' },
+            { icon: Users, title: 'Collaboration Hub', desc: 'Shared workspace for vendor teams and customer stakeholders.' },
+            { icon: Calendar, title: 'Calendar & Scheduling', desc: 'Built-in booking and calendar sync to keep meetings on track.' },
+            { icon: MessageSquare, title: 'Feedback Tracking', desc: 'Capture, categorize, and act on customer feedback in real time.' },
+            { icon: Shield, title: 'Health Scoring', desc: 'Proactive risk detection with AI-powered health scores.' },
+            { icon: Rocket, title: 'Insights & Digests', desc: 'Automated weekly digests and cross-project product insights.' }].
+            map(({ icon: Icon, title, desc }) =>
+            <div key={title} className="rounded-xl border border-border bg-card p-6 space-y-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                   <Icon className="h-5 w-5 text-primary" />
                 </div>
                 <h3 className="font-semibold">{title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>
@@ -145,6 +145,6 @@ export default function Landing() {
           </p>
         </div>
       </footer>
-    </div>
-  );
+    </div>);
+
 }
